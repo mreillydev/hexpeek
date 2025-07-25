@@ -1,0 +1,4 @@
+<map id="Settings" name="Settings">
+<area shape="rect" id="node1" title="Container for global settings." alt="" coords="5,95,80,121"/>
+<area shape="rect" id="node2" href="$structFileAttr.html" title="Struct tracking file attributes." alt="" coords="9,5,77,32"/>
+</map>

@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['sameness_0',['sameness',['../hexpeek__files_8c.html#ac87f29c270b98c74f08ad01931df981c',1,'sameness(int fd0, int fd1):&#160;hexpeek_files.c'],['../hexpeek_8h.html#ac87f29c270b98c74f08ad01931df981c',1,'sameness(int fd0, int fd1):&#160;hexpeek_files.c']]],
+  ['saved_5fat_1',['saved_at',['../structBackupOp.html#a03024d1b33d0e2e8349fb6dae8f89580',1,'BackupOp']]],
+  ['saved_5ffrom_2',['saved_from',['../structBackupOp.html#af6e4b95586ffda0e85bad79fe0db8b92',1,'BackupOp']]],
+  ['saved_5flen_3',['saved_len',['../structBackupOp.html#a5c1e9e43e4dd539540a5a5e7e1a4cab7',1,'BackupOp']]],
+  ['scalar_5fbase_4',['scalar_base',['../structSettings.html#a883067bc7308a43b24efeebd0e4559ea',1,'Settings']]],
+  ['seekablecommand_5',['seekableCommand',['../hexpeek_8c.html#ae98961d6c1639a9560949918efdf66c0',1,'hexpeek.c']]],
+  ['seekto_6',['seekto',['../hexpeek__files_8c.html#a468835852785b7196282edc7de2bd8f0',1,'seekto(int fd, hoff_t offset):&#160;hexpeek_files.c'],['../hexpeek_8h.html#ae817f6b74ffdafed16ea72df06da4cde',1,'seekto(int descriptor, hoff_t offset):&#160;hexpeek_files.c']]],
+  ['settings_7',['Settings',['../structSettings.html',1,'']]],
+  ['settings_5finit_8',['Settings_init',['../hexpeek_8h.html#adf0bc0c4c09b816008a75fbf1f9fe0cc',1,'Settings_init(Settings *st):&#160;hexpeek_types.c'],['../hexpeek__types_8c.html#adf0bc0c4c09b816008a75fbf1f9fe0cc',1,'Settings_init(Settings *st):&#160;hexpeek_types.c']]],
+  ['show_5fd_9',['show_d',['../hexpeek_8c.html#aefb7f2ddf7b2e46663bce8ba99fca72a',1,'hexpeek.c']]],
+  ['show_5fl_10',['show_l',['../hexpeek_8c.html#a0a07454ff888670639400c866b6fa392',1,'hexpeek.c']]],
+  ['show_5fn_11',['show_n',['../hexpeek_8c.html#a02f972012636794587b50c8147fe9a51',1,'hexpeek.c']]],
+  ['show_5fv_12',['show_v',['../hexpeek_8c.html#a9cddea51469797483795783c9b59928a',1,'hexpeek.c']]],
+  ['size_5fadj_13',['size_adj',['../structBackupOp.html#a807ad9bb91a3cf9a635327c6f0797d77',1,'BackupOp']]],
+  ['size_5forig_14',['size_orig',['../structBackupOp.html#a5b6e55c57d4f470a1391840239be2d82',1,'BackupOp']]],
+  ['slprintf_15',['slprintf',['../hexpeek_8h.html#afefd1d521fe8c1cd67c5ad8e49430da3',1,'slprintf(char *buf, char *lim, char const *format,...):&#160;hexpeek_misc.c'],['../hexpeek__misc_8c.html#afefd1d521fe8c1cd67c5ad8e49430da3',1,'slprintf(char *buf, char *lim, char const *format,...):&#160;hexpeek_misc.c']]],
+  ['start_16',['start',['../structFileZone.html#a3923c05f88038c5fdbad64b080422099',1,'FileZone']]],
+  ['startoffz_17',['startOfFz',['../hexpeek_8c.html#a6a28615cb318d6e501cc0ff89935aa68',1,'hexpeek.c']]],
+  ['status_18',['status',['../structBackupOp.html#a595fb2c15cdf06072dd94b4b9e67b865',1,'BackupOp']]],
+  ['streamablecommand_19',['streamableCommand',['../hexpeek_8c.html#a0a00fea7a60db8218e9e5641e68fd988',1,'hexpeek.c']]],
+  ['strtooff_20',['strtooff',['../hexpeek_8h.html#a8e43352879d49585db1f4d15162b11aa',1,'strtooff(char const *str, char const **endptr, hoff_t *result, int infi):&#160;hexpeek_misc.c'],['../hexpeek__misc_8c.html#a8e43352879d49585db1f4d15162b11aa',1,'strtooff(char const *str, char const **endptr, hoff_t *result, int infi):&#160;hexpeek_misc.c']]],
+  ['strtosz_21',['strtosz',['../hexpeek_8h.html#aac7f943912e9aeffcb2f7df257ebd080',1,'strtosz(char const *str, hoff_t *result):&#160;hexpeek_misc.c'],['../hexpeek__misc_8c.html#aac7f943912e9aeffcb2f7df257ebd080',1,'strtosz(char const *str, hoff_t *result):&#160;hexpeek_misc.c']]],
+  ['subtype_22',['subtype',['../structParsedCommand.html#a0fbb9b368f2e8059ab02713184a249f2',1,'ParsedCommand']]],
+  ['sz_23',['sz',['../structConvertedText.html#aabf8a610f48e87a0fc1d36fc4043ad24',1,'ConvertedText']]]
+];

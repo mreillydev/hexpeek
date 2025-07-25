@@ -1,0 +1,5 @@
+<map id="ParsedCommand" name="ParsedCommand">
+<area shape="rect" id="node1" title="User command broken down after parsing." alt="" coords="5,184,139,211"/>
+<area shape="rect" id="node2" href="$structFileZone.html" title="Struct representing a zone (region) of an infile." alt="" coords="33,5,111,32"/>
+<area shape="rect" id="node3" href="$structConvertedText.html" title="Struct representing user input data converted into a format to be used for hexpeek operations." alt="" coords="93,95,209,121"/>
+</map>

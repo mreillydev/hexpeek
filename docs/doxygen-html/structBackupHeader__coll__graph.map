@@ -1,0 +1,4 @@
+<map id="BackupHeader" name="BackupHeader">
+<area shape="rect" id="node1" title="Packed struct stored in a backup file containing header information." alt="" coords="5,95,123,121"/>
+<area shape="rect" id="node2" href="$structBackupOp.html" title="Packed struct stored in a backup file representing a backup operation." alt="" coords="20,5,108,32"/>
+</map>

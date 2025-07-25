@@ -1,0 +1,11 @@
+<map id="src/hexpeek.h" name="src/hexpeek.h">
+<area shape="rect" id="node1" title="Header for declarations shared between files." alt="" coords="643,5,757,32"/>
+<area shape="rect" id="node2" href="$hexpeek_8c.html" title="Main program file." alt="" coords="5,80,117,107"/>
+<area shape="rect" id="node3" href="$hexpeek__backup_8c.html" title="Encapsulated backup and recovery implementation." alt="" coords="141,80,307,107"/>
+<area shape="rect" id="node4" href="$hexpeek__constants_8c.html" title="String constants and lookup tables for various data representations." alt="" coords="331,80,514,107"/>
+<area shape="rect" id="node5" href="$hexpeek__files_8c.html" title="Filesystem API, mix of simple wrappers of OS APIs and more complex functions." alt="" coords="539,80,685,107"/>
+<area shape="rect" id="node6" href="$hexpeek__global_8c.html" title="Global values including lookup tables, malloc&#45;d strings, and runtime settings." alt="" coords="710,80,869,107"/>
+<area shape="rect" id="node7" href="$hexpeek__misc_8c.html" title="Some string processing and other miscellaneous functions." alt="" coords="893,80,1043,107"/>
+<area shape="rect" id="node8" href="$hexpeek__settings_8c.html" title="Conversion functions of user string input into hexpeek commands and runtime settings." alt="" coords="1068,80,1239,107"/>
+<area shape="rect" id="node9" href="$hexpeek__types_8c.html" title="Initializer functions for header structs." alt="" coords="1263,80,1417,107"/>
+</map>
