@@ -1,0 +1,28 @@
+                 Brief descriptions of data files used in tests
+                 ----------------------------------------------
+
+--------------------------------------------------------------------------------
+The data files listed below are not distributed outright (due to their sizes),
+but are reconstructed from a hexpeek autoskip dump and checked against a
+standard cksum file the first time they are needed by the test script.
+--------------------------------------------------------------------------------
+
+hugetest-cusp.hexpeek-test-data
+    Consists of the hexadecimal octet string 11223344 repeated. Total file
+    size is 4GiB - 1 octets.
+
+hugetest-cusp.hexpeek-test-data-exp
+    Result of running operations in hugetest-cusp.in on
+    hugetest-cusp.hexpeek-test-data.
+
+hugetest-6GiB.hexpeek-test-data
+    Consists of the hexadecimal octet string 0022446688AACCEE1133557799BBDDFF
+    repeated, with the following adjustments:
+        -  FFFFFF73:100000030 r   BADCDE
+        -         0           r DEADBEEF
+        - 170F00000,30012     r       00
+    Total file size is 6 GiB octets.
+
+hugetest-6GiB.hexpeek-test-data-exp
+    Result of running operations in hugetest-6GiB.in on
+    hugetest-6GiB.hexpeek-test-data.

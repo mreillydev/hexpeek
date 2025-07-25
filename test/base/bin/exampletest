@@ -1,0 +1,69 @@
+#!/bin/sh
+# Copyright 2020, 2025 Michael Reilly (mreilly@mreilly.dev).
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+# 3. Neither the names of the copyright holders nor the names of the
+#    contributors may be used to endorse or promote products derived from
+#    this software without specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+# PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS
+# OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+# OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+HEXPEEK_TESTLEVEL="base"
+. "$HEXPEEK_BASEDIR/test/shcommon"
+
+num=$1
+filecnt=$2
+
+name="exampletest$num"
+echo "$name"
+
+flag="-r"
+if [ $num -gt 0 ]; then
+    flag="-w"
+fi
+
+
+f0="$name.hexpeek-test-data"
+f1=""
+p0="$Results/$f0"
+p1=""
+if [ $filecnt -eq 2 ]; then
+    f0="$name-0.hexpeek-test-data"
+    f1="$name-1.hexpeek-test-data"
+    p0="$Results/$f0"
+    p1="$Results/$f1"
+fi
+
+logon
+$Rununder $PgmMain -trace $Results/$name.trc -autoskip +strict -text $flag $p0 $p1 <$Results/$name.in 2>$Results/$name.err >$Results/$name.out
+rc=$?
+logoff
+checkrc $rc $PgmMain $Rununder
+
+checkfiles -text $Datasrc/$name.out $Results/$name.out
+checkfiles -text $Datasrc/$name.err $Results/$name.err
+checkfiles -binary $Datasrc/$f0-exp $p0
+if [ -n "$p1" ]; then
+    checkfiles -binary $Datasrc/$f1-exp $p1
+fi
+
+logsep
+
+exit 0

@@ -1,0 +1,22 @@
+0000: 48656c6c 6f2c2077 6f726c64 2121210a
+10
+At 7 (20 octets requested, 20 per line, hexadecimal) :
+0007: 776f726c 64212121 0a
+7
+At 9 (20 octets requested, 20 per line, hexadecimal) :
+0009: 726c6421 21210a
+9
+9
+10
+At 6 (20 octets requested, 20 per line, hexadecimal) :
+0006: 20776f72 6c642121 210a
+9
+7
+At c (20 octets requested, 20 per line, hexadecimal) :
+000c: 2121210a
+c
+At a (20 octets requested, 20 per line, hexadecimal) :
+000a: 6c642121 210a
+a
+4
+0000: 48656c6c 6f2c2077 6f726c64 2121210a                                      Hello, world!!!.

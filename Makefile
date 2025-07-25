@@ -1,0 +1,60 @@
+# Copyright 2020, 2025 Michael Reilly (mreilly@mreilly.dev).
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+# 3. Neither the names of the copyright holders nor the names of the
+#    contributors may be used to endorse or promote products derived from
+#    this software without specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+# PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS
+# OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+# OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+# Note that libedit is optional. To build hexpeek without it, remove
+# -DHEXPEEK_EDITABLE_CONSOLE and -ledit.
+SRCDIR := src
+BINDIR := bin
+EXEC   := $(BINDIR)/hexpeek
+CC     ?= clang
+CFLAGS := -I$(SRCDIR) -O3 -Wall -fPIC
+DFLAGS := -DHEXPEEK_EDITABLE_CONSOLE 
+LIBS   := -ledit #-ltermcap
+
+all: $(EXEC)
+	make -C test
+
+clear:
+	rm -f $(EXEC)
+	make -C test clear
+
+clean: clear all
+
+$(EXEC): $(SRCDIR)/*.c $(SRCDIR)/*.h
+	mkdir -p $(BINDIR)
+	$(CC) $(CFLAGS) $(DFLAGS) -o $(EXEC) $(SRCDIR)/*.c $(LIBS)
+	cd $(BINDIR) ; ln -f -s hexpeek hexview ; ln -f -s hexpeek hexDump ; ln -f -s hexpeek hexpack ; ln -f -s hexpeek hexdiff ; cd ..
+
+test: clean
+	cd test ; ./run all
+
+docs:
+	doxygen
+	rm -rf docs
+	mkdir -p docs docs/man
+	cp -i -r etc/hexpeek.html docs/man/index.html
+	cp -i -r doxygen-output/html docs/doxygen-html
+	cp docs/doxygen-html/files.html docs/doxygen-html/index.html

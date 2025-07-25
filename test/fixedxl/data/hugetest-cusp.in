@@ -1,0 +1,16 @@
+# A repeated write near end of file
+ fffffffc,40 i @fffffff1:-0
+# Kills around 4GiB limit
+ ffffffff    k
+100000000    k
+100000001    k
+# Inserts around 4GiB limit
+100000001    i AA
+100000000    i BB
+ ffffffff    i CC
+# Print
+ fff00000:-0
+# Create a hole
+200000000,20000 i FF020305070B0D11
+# Print
+1fff00000:-0

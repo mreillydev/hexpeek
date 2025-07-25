@@ -1,0 +1,267 @@
+#!/bin/sh
+# Copyright 2025 Michael Reilly (mreilly@mreilly.dev).
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+# 3. Neither the names of the copyright holders nor the names of the
+#    contributors may be used to endorse or promote products derived from
+#    this software without specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+# PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS
+# OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+# OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+HEXPEEK_TESTLEVEL="advanced"
+. "$HEXPEEK_BASEDIR/test/shcommon"
+
+randtest()
+{
+    # Get args
+    seed=$1
+    filecnt=$2
+    major=$3
+    minor=$4
+    opmin=$5
+    opmax=$6
+    bkdepth=$7
+    chkdump=$8
+    randfile_min_len=$9
+    randfile_max_len=${10}
+    randfile_unlink=${11}
+    if [ $filecnt -lt 1 ] || [ $filecnt -gt 2 ]; then
+        fail
+    fi
+
+    # Tools
+    Sizetool="$Testbin/filesize"
+    Dumpcmptool="$Testbin/dumpcmp"
+    Randtool_="$Testbin/randgen"
+
+    # Randomly choose some run parameters
+    seedfile="$Results/randtest-tmp.seed"
+    if [ $seed = "nil" ]; then
+        touch $seedfile
+        seed=$($Randtool_ -s $seedfile -p)
+    else
+        printf "%s\n" "$seed" >> $seedfile
+    fi
+    Randtool="$Randtool_ -s $seedfile"
+    logon
+    seed="$seed"
+    opcnt=$($Randtool -d $opmin $opmax)
+    f0cnt=$($Randtool -d $randfile_min_len $randfile_max_len)
+    f1cnt=0
+    if [ $filecnt -ge 2 ]; then
+        f1cnt=$($Randtool -d $randfile_min_len $randfile_max_len)
+    fi
+    logoff
+
+    # Set name
+    name="randtest-$seed-$filecnt-$major-$minor-$opcnt-$bkdepth"
+    printf "%s\n" "$name"
+
+    # Setup some derived paths
+    bnm="$Results/$name"
+    mv -i $seedfile "$bnm.seed"
+    seedfile="$bnm.seed"
+    Randtool="$Randtool_ -s $seedfile"
+    allcmds="$bnm.in"
+    permcmds="$bnm-perm.in"
+    f0nm="$bnm-0"
+    f0datanm="$f0nm.hexpeek-test-data"
+    f0expnm="$f0datanm-exp"
+    f0bknm0="$Results/.$name-0.hexpeek-test-data.f0.$PgmName-backup"
+    f0bknm1="$Results/.$name-0.hexpeek-test-data.f1.$PgmName-backup"
+    f1nm=""
+    f1datanm=""
+    f1expnm=""
+    f1bknm0=""
+    f1bknm1=""
+    if [ $f1cnt -gt 0 ]; then
+        f1nm="$bnm-1"
+        f1datanm="$f1nm.hexpeek-test-data"
+        f1expnm="$f1datanm-exp"
+        f1bknm0="$Results/.$name-1.hexpeek-test-data.f0.$PgmName-backup"
+        f1bknm1="$Results/.$name-1.hexpeek-test-data.f1.$PgmName-backup"
+    fi
+
+    # Set some derived variables
+    aflag=""
+    bflag="-backup $(printf "%X" $bkdepth)"
+    cflag=""
+    if [ $chkdump -ne 0 ]; then
+        cflag="-Validator=$Dumpcmptool"
+    fi
+
+    # Create file(s)
+    $Randtool -f $f0datanm $f0cnt
+    rc=$?
+    if [ $rc -ne 0 ]; then
+        echo "$Randtool failed"
+        fail $rc
+    fi
+    cp $f0datanm $f0expnm
+    if [ $f1cnt -gt 0 ]; then
+        $Randtool -f $f1datanm $f1cnt
+        rc=$?
+        if [ $rc -ne 0 ]; then
+            echo "$Randtool failed"
+            fail $rc
+        fi
+        cp $f1datanm $f1expnm
+    fi
+
+    # Create the files to store command strings
+    touch $permcmds
+    touch $allcmds
+
+    # Determine how many operations are recoverable
+    reccnt=0
+    if [ $bkdepth -gt 0 ]; then
+        reccnt=$opcnt
+        if [ $opcnt -gt $bkdepth ]; then
+            if [ $(($opcnt % $bkdepth)) -eq 0 ]; then
+                reccnt=$(($bkdepth + $bkdepth))
+            else
+                reccnt=$(($bkdepth + $opcnt % $bkdepth))
+            fi
+        fi
+    fi
+
+    # Randomly generate commands to run on the created file
+    permcnt=0
+    if [ $opcnt -gt $reccnt ]; then
+        permcnt=$(($opcnt - $reccnt))
+        $Randtool -x $major $permcnt $f0cnt $f1cnt > $permcmds
+        if [ $? -ne 0 ]; then
+            printf "%s -x failed\n" "$Randtool"
+            fail
+        fi
+        cp $permcmds $allcmds
+        # If no recoverable operations, <file>.hexpeek-test-data-exp is never checked
+        if [ $reccnt -gt 0 ]; then
+            printf "quit" >> $permcmds
+            logon
+            $Rununder $HEXPEEK_ADVANCED_PGMMAIN -trace $bnm-exp.trc -w -backup 0 $f0expnm $f1expnm <$permcmds >$bnm-exp.out 2>$bnm-exp.err
+            rc=$?
+            logoff
+            checkrc $rc $HEXPEEK_ADVANCED_PGMMAIN $Rununder
+            f0cnt=$($Sizetool $f0expnm)
+            if [ -n "$f1expnm" ]; then
+                f1cnt=$($Sizetool $f1expnm)
+            fi
+        fi
+    fi
+    if [ $reccnt -gt 0 ]; then
+        $Randtool -x $major $reccnt $f0cnt $f1cnt >> $allcmds
+        if [ $? -ne 0 ]; then
+            printf "%s -x failed\n" "$Randtool"
+            fail
+        fi
+    fi
+    if [ $minor -eq 1 ]; then
+        aflag=""
+        printf "stop" >> $allcmds
+    elif [ $minor -eq 2 ]; then
+        deathcount=$($Randtool -d 1 8)
+        aflag="-SimulateDeath=$deathcount"
+        cflag=""
+        printf "quit" >> $allcmds
+    else
+        echo "unexpected minor test number"
+        fail
+    fi
+
+    # Run commands, preserving backup files
+    logon
+    $Rununder $HEXPEEK_ADVANCED_PGMMAIN -trace $bnm.trc -w $aflag $bflag $cflag $f0datanm $f1datanm <$allcmds >$bnm.out 2>$bnm.err
+    rc=$?
+    logoff
+    if [ $minor -eq 2 ]; then
+        checkbadrc $rc $HEXPEEK_ADVANCED_PGMMAIN $Rununder
+    else
+        checkrc $rc $HEXPEEK_ADVANCED_PGMMAIN $Rununder
+    fi
+
+    # Check standard error from run
+    if [ $minor -eq 1 ] || [ -n "$Rununder" ]; then
+        checkfiles -text /dev/null $bnm.err
+    fi
+
+    # If any recoverable operations
+    if [ $reccnt -gt 0 ]; then
+        # Check existence of backup files for file0
+        if [ ! -e "$f0bknm0" ]; then
+            echo "backup file 0 not present"
+            fail
+        fi
+        if [ ! -e "$f0bknm1" ]; then
+            echo "backup file 1 not present"
+            fail
+        fi
+
+        # Run recovery on file0
+        logon
+        $Rununder $HEXPEEK_ADVANCED_PGMMAIN -trace $bnm-0-rec.trc -AutoRecover $f0datanm </dev/null >$bnm-recover.out 2>$bnm-recover.err
+        rc=$?
+        logoff
+        checkrc $rc $HEXPEEK_ADVANCED_PGMMAIN $Rununder
+        checkfiles -text /dev/null $bnm-recover.err
+        checkfiles -binary $f0expnm $f0datanm
+
+        if [ -n "$f1datanm" ]; then
+            # Check existence of backup files for file0
+            if [ ! -e "$f1bknm0" ]; then
+                echo "backup file 0 not present"
+                fail
+            fi
+            if [ ! -e "$f1bknm1" ]; then
+                echo "backup file 1 not present"
+                fail
+            fi
+
+            # Run recovery on file1
+            logon
+            $Rununder $HEXPEEK_ADVANCED_PGMMAIN -trace $bnm-1-rec.trc -AutoRecover $f1datanm </dev/null >$bnm-recover.out 2>$bnm-recover.err
+            rc=$?
+            logoff
+            checkrc $rc $HEXPEEK_ADVANCED_PGMMAIN $Rununder
+            checkfiles -text /dev/null $bnm-recover.err
+            checkfiles -binary $f1expnm $f1datanm
+        fi
+    fi
+
+    # Test -pack
+    logon
+    $Rununder $HEXPEEK_ADVANCED_PGMMAIN -dump -trace $bnm-dump.trc $f0nm.hexpeek-test-data -o $f0nm.dump
+    rc=$?
+    logoff
+    checkrc $rc $HEXPEEK_ADVANCED_PGMMAIN $Rununder
+    logon
+    $Rununder $HEXPEEK_ADVANCED_PGMPACK -trace $bnm-pack.trc $f0nm.dump -o $f0nm.pack
+    rc=$?
+    logoff
+    checkrc $rc $HEXPEEK_ADVANCED_PGMPACK $Rununder
+    checkfiles -binary $f0nm.hexpeek-test-data $f0nm.pack
+
+    # Cleanup
+    if [ $randfile_unlink -ne 0 ]; then
+        rm -f $bnm*.hexpeek-test-data* $bnm*.dump $bnm*.pack
+    fi
+
+    logsep
+}

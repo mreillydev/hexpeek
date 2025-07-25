@@ -1,0 +1,254 @@
+margin 2
+cols 20
++
+offset
+@@+
+offset
+0 offset
+0,13pv
+bits
+0,13p
+hex
+,1
+offset
+:7
+2,3+
+@@,5+
+@@:22+
+offset
+80+r44
+offset
+insert 66
+,2p
+offset
+k
+offset
+0
+replace 11
+offset
+12 kill
+offset
+-3offset
+offset
+$0@-0,0offset
+offset
+10 , 40 + p
+offset
+10,40+p
+offset
+0:40 r 1EB7
+@10,40
+$0  @100 r 2233
+print
+offset
+100,2 r 00
+100,2p
+100 r 2233
+$0 100,2
+@1f,7+i99AA BB
+offset
+1:3k
+offset
+10:40
+-1,1 delete
+offset
+-1 replace 55
+-0i 7788
+20:60
+hexu
+ @20:60
+1FE,10p
+bits
+20:60
+hexl
+# no ruler, group 0
++ruler
+group 0
+margin 0
+0:40
+margin 1
+0:40
+margin 2
+0:40
+margin 4
+0:40
+margin 8
+0:40
+margin full
+0:40
+# no ruler, group 1
++ruler
+group 1
+margin 0
+0:40
+margin 1
+0:40
+margin 2
+0:40
+margin 4
+0:40
+margin 8
+0:40
+margin full
+0:40
+# no ruler, group 2
++ruler
+group 2
+margin 0
+0:40
+margin 1
+0:40
+margin 2
+0:40
+margin 4
+0:40
+margin 8
+0:40
+margin full
+0:40
+# ruler, group 0
+ruler
+group 0
+margin 0
+0:40
+margin 1
+0:40
+margin 2
+0:40
+margin 4
+0:40
+margin 8
+0:40
+margin full
+0:40
+# ruler, group 1
+ruler
+group 1
+margin 0
+0:40
+margin 1
+0:40
+margin 2
+0:40
+margin 4
+0:40
+margin 8
+0:40
+margin full
+0:40
+# ruler, group 2
+ruler
+group 2
+margin 0
+0:40
+margin 1
+0:40
+margin 2
+0:40
+margin 4
+0:40
+margin 8
+0:40
+margin full
+0:40
+# ruler, group 4
+ruler
+group 4
+margin 0
+0:40
+margin 1
+0:40
+margin 2
+0:40
+margin 4
+0:40
+margin 8
+0:40
+margin full
+0:40
+# ruler, group 8
+ruler
+group 8
+margin 0
+0:40
+margin 1
+0:40
+margin 2
+0:40
+margin 4
+0:40
+margin 8
+0:40
+margin full
+0:40
+# ruler, group 10
+ruler
+group 10
+margin 0
+0:40
+margin 1
+0:40
+margin 2
+0:40
+margin 4
+0:40
+margin 8
+0:40
+margin full
+0:40
+# restore default group and margin
++ruler
+group 4
+margin 2
+line 10
+20:60
+group 1
+p
+group 4
+line 20
+p
+ruler
+p
++ruler
+rlen 40
+p
+line 1
+p
+rlen 9
+p
+line 20
+1e8,1D
+$0/0B  0D 11
+-0p
+0:-0p
+0:-0 r DEADBEEF
+0:-0p
+0r@2:4
+0:8
+5,6k
+0:-0p
+178iBDCEDFE0
+178i@176
+178,5p
+0:-0p
+12F1:17BA+rB16BAD
+offset
+0:-0p
++1555:1E09rF00D
+offset
+0:-0p
+cols 8
+0:100
+17,1
++autoskip
+0:100
+autoskip
+cols 10
+73B0:-0p
+-0rAA
+73B0:-0p
+-2r0000CDEF
+73B0:-0p
+0:-0k
+0:-0p
+offset

@@ -1,0 +1,173 @@
+#!/bin/sh
+# Copyright 2020 Michael Reilly (mreilly@mreilly.dev).
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+# 3. Neither the names of the copyright holders nor the names of the
+#    contributors may be used to endorse or promote products derived from
+#    this software without specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+# PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS
+# OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+# OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+HEXPEEK_TESTLEVEL="base"
+. "$HEXPEEK_BASEDIR/test/shcommon"
+
+# subshell
+idx2cmd()
+(
+    idx=$1
+    at=$2
+    data=$3
+
+    if [ $idx -eq 1 ]; then
+        echo "$at""r$data"
+    elif [ $idx -eq 2 ]; then
+        echo "-0i$data"
+    elif [ $idx -eq 3 ]; then
+        echo "$at""i$data"
+    elif [ $idx -eq 4 ]; then
+        echo "$at""k"
+    else
+        echo ""
+    fi
+
+    exit 0
+)
+
+flagdotest()
+{
+    shouldfail=$1
+    strictfail=$2
+    errfile=$3
+
+    shift
+    shift
+    shift
+
+    name="flagtests"
+    strictflag=
+    if [ $strictfail -eq 0 ]; then
+        strictflag="+strict"
+    elif [ $strictfail -eq 1 ]; then
+        strictflag="-strict"
+    fi
+
+    rm -f $Results/$name.out
+
+    logon
+    $PgmMain -trace $Results/$name.trc -backup 0 $strictflag $* -o $Results/$name.out $Results/$name.hexpeek-test-data </dev/null 2>$Results/$name.err
+    rc=$?
+    logoff
+
+    if [ $shouldfail -eq 0 ]; then
+        checkrc $rc $PgmMain
+        checkfiles -text /dev/null $Results/$name.err
+    else
+        if [ $strictfail -eq 0 ]; then
+            checkrc $rc $PgmMain
+        else
+            checkbadrc $rc $PgmMain
+        fi
+        if [ "/dev/null" != "$errfile" ]; then
+            checkfiles -text $errfile $Results/$name.err
+        fi
+    fi
+}
+
+name="flagtests"
+
+echo "$name"
+
+flagdotest 1 2 /dev/null "-garbage"
+flagdotest 1 2 /dev/null "-hexf"
+
+flagdotest 1 2 /dev/null "-line" "-1"
+flagdotest 1 2 /dev/null "-line" "10001"
+flagdotest 1 2 /dev/null "-cols" "-1"
+flagdotest 1 2 /dev/null "-cols" "10001"
+flagdotest 1 2 /dev/null "-c" "-1"
+flagdotest 1 2 /dev/null "-c" "10001"
+flagdotest 1 2 /dev/null "-group" "-1"
+flagdotest 1 2 /dev/null "-group" "10001"
+flagdotest 1 2 /dev/null "-g" "-1"
+flagdotest 1 2 /dev/null "-g" "10001"
+flagdotest 1 2 /dev/null "-margin" "-1"
+
+flagdotest 1 2 /dev/null "-format" "%g"
+
+flagdotest 1 2 /dev/null "-scalar" "-1"
+flagdotest 1 2 /dev/null "-scalar" "1"
+flagdotest 1 2 /dev/null "-scalar" "2"
+flagdotest 1 2 /dev/null "-scalar" "10"
+flagdotest 1 2 /dev/null "-scalar" "16"
+flagdotest 1 2 /dev/null "-scalar" "37"
+
+flagdotest 1 2 /dev/null "-recover" "-AutoRecover"
+
+flagdotest 1 2 /dev/null "-backup -1"
+flagdotest 1 2 /dev/null "-backup 21"
+flagdotest 1 2 /dev/null "-backup garbage"
+
+flagdotest 1 2 /dev/null "-dump" "-diff"
+flagdotest 1 2 /dev/null "-x" "0,2p" "-diff"
+
+logsep
+
+strictfail=0
+sf_idx=0
+while [ $sf_idx -lt 2 ]; do
+
+    cmd_idx=1
+    while [ $cmd_idx -lt 5 ]; do
+        cmdstr=$(idx2cmd $cmd_idx "80" "FF")
+        if [ ! -n "$cmdstr" ]; then
+            echo "idx2cmd() failed"
+            fail
+        fi
+        flagdotest 1 $strictfail $Datasrc/$name-prohib.err "-r" "-x" "$cmdstr"
+        if [ $cmd_idx -ge 2 ]; then
+            flagdotest 1 $strictfail $Datasrc/$name-noik.err "+ik" "-x" "$cmdstr"
+        fi
+        cmd_idx=$(($cmd_idx + 1))
+    done
+
+    flagdotest 1 $strictfail $Datasrc/$name-noinfer.err "-pedantic" "-x" "0"
+    flagdotest 1 $strictfail $Datasrc/$name-noinfer.err "-pedantic" "-x" ",8"
+    flagdotest 1 $strictfail $Datasrc/$name-noinfer.err "-pedantic" "-x" "p"
+    flagdotest 1 $strictfail $Datasrc/$name-noinfer.err "-pedantic" "-x" "r44"
+    flagdotest 1 $strictfail $Datasrc/$name-noinfer.err "-pedantic" "-x" "i55"
+    flagdotest 1 $strictfail $Datasrc/$name-noinfer.err "-pedantic" "-x" "0,1r@2"
+    flagdotest 1 $strictfail $Datasrc/$name-noinfer.err "-pedantic" "-x" "k"
+    flagdotest 1 $strictfail $Datasrc/$name-badlimit.err "-pedantic" "-x" "2:1"
+
+    flagdotest 1 $strictfail /dev/null "-pedantic" "-x" "0:73c0"
+    flagdotest 1 $strictfail /dev/null "-pedantic" "-x" "73bf,1"
+    flagdotest 1 $strictfail /dev/null "-pedantic" "-x" "73be,2"
+    flagdotest 1 $strictfail /dev/null "-pedantic" "-x" "0:-0~0:73c0"
+    flagdotest 1 $strictfail /dev/null "-pedantic" "-x" "0:73c0~0:-0"
+
+    flagdotest 1 $strictfail $Datasrc/$name-excess-delete.err "-pedantic" "-x" "0,fffffffk"
+
+    logsep
+
+    strictfail=1
+    sf_idx=$(($sf_idx + 1))
+done
+
+exit 0

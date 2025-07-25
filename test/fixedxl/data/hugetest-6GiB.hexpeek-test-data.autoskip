@@ -1,0 +1,23 @@
+0000000000000000: deadbeef 88aaccee 11335577 99bbddff
+0000000000000010: 00224466 88aaccee 11335577 99bbddff
+*
+00000000ffffff70: 002244ba dcdebadc debadcde badcdeba
+00000000ffffff80: dcdebadc debadcde badcdeba dcdebadc
+00000000ffffff90: debadcde badcdeba dcdebadc debadcde
+00000000ffffffa0: badcdeba dcdebadc debadcde badcdeba
+00000000ffffffb0: dcdebadc debadcde badcdeba dcdebadc
+00000000ffffffc0: debadcde badcdeba dcdebadc debadcde
+00000000ffffffd0: badcdeba dcdebadc debadcde badcdeba
+00000000ffffffe0: dcdebadc debadcde badcdeba dcdebadc
+00000000fffffff0: debadcde badcdeba dcdebadc debadcde
+0000000100000000: badcdeba dcdebadc debadcde badcdeba
+0000000100000010: dcdebadc debadcde badcdeba dcdebadc
+0000000100000020: debadcde badcdeba dcdebadc debadcde
+0000000100000030: 00224466 88aaccee 11335577 99bbddff
+*
+0000000170f00000: 00000000 00000000 00000000 00000000
+*
+0000000170f30010: 00004466 88aaccee 11335577 99bbddff
+0000000170f30020: 00224466 88aaccee 11335577 99bbddff
+*
+000000017ffffff0: 00224466 88aaccee 11335577 99bbddff

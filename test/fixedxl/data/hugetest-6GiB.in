@@ -1,0 +1,24 @@
+# Overlapping replace, source < destination
+FFFB3E10:100600000r@FFF37DDD:1000F0031
+# Overlapping replace, source contained within destination
+FFFA07E1:100711112r@FFFE92FF,22222
+# Overlapping replace, source = destination
+FFFFFFFF,3F918r@FFFFFFFF,11111
+# Zero to zero replace
+170F06000,20000r@170F08000,1001
+# Overlapping replace, source > destination
+170EDD000,37001r@170F00200,37001
+# Deletion at start
+0,1k
+# Overlapping insertion, source < destination
+1000i@0,20000
+# Deletion at start
+0,1k
+# Deletion after middle
+E0000000,40000k
+# Overlapping insertion, source > destination
+E0001000,300F7i@E0004100:E001B100
+# Append
+1800100f5,6000Fi99887700
+# Print
+0000000170f00000:-0

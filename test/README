@@ -1,0 +1,59 @@
+                                Test Invocation
+                                ---------------
+
+Tests are run by invoking './run' in this directory. Results from previous test
+runs will be deleted, and new results will be stored in ./results directory.
+A logfile will be created in ./results/run.log.
+
+usage: './run [SUITE] [-plugins] [-size min max] [-clean]'
+
+    A specific test suite (e.g. 'base', 'fixedxl') can be specified as SUITE,
+    in which case only that suite will run; otherwise, all known tests will run.
+
+    Test suites:
+        base        base command testing
+        advanced    randomized test patterns with backup/recover testing
+          -plugins  as above, but with extra plugin tests, e.g. die & recover
+        fixedxl     large file testing (requires 35 GiB in total space)
+
+The optional flags are only meaningful to randtests:
+
+    -plugins runs extra variations that need hexpeek built with
+    hexpeek_plugins.c from advanced/ and HEXPEEK_PLUGINS defined.
+
+    -size uses generated files within the given domain.
+
+    -clean unlinks generated files after their test is complete.
+
+
+                             Environment Variables
+                             ---------------------
+
+HEXPEEK_BASEDIR     The path to the root project directory. If unspecified, set
+                    automatically by ./run.
+
+HEXPEEK_RUNUNDER    Program under which to run hexpeek (used by most, not all,
+                    tests). For example, a trace tool. If unspecified, unused.
+
+HEXPEEK_DIFFBIN     Program to diff two files that returns 0 if same, non-zero
+                    otherwise. The return code of this program is checked, but
+                    its standard output is always redirected to /dev/null. If
+                    unspecified, "simplediff -binary" will be used.
+
+HEXPEEK_DIFFTEXT    Performs the same function as $HEXPEEK_DIFFBIN, but used to
+                    compare stdout/stderr results and other text files. If
+                    unspecified, "simplediff -text" will be used.
+
+HEXPEEK_SHOWBIN     Program to visually show the differences between two
+                    non-text files. If unspecified, unused. hexdiff may be used
+                    for this variable, but not set by default.
+
+HEXPEEK_SHOWTEXT    Program to visually show the differences between two text
+                    files. If unspecified, unused.
+
+HEXPEEK_TESTPORT    Port to be used for sockettest. If unspecified, 58585.
+
+HEXPEEK_DUMPTOOL    Program to perform an uppercase hexadecimal dump with no
+                    extraneous formatting. Only used by dumpcmp. The program
+                    must accept the -s and -l options as understood by hexpeek.
+                    If unspecified, "hexpeek -hexu -p +lineterm" will be used.

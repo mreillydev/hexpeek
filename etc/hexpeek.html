@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>hexpeek manual</title>
+    <style>
+    body
+    {
+        font-family: monospace, monospace;
+    }
+    </style>
+</head>
+<body>
+<b id="NAME">NAME</b><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hexpeek - edit, dump, pack, and diff binary files in hex and bits<br>
+<br>
+<b id="SYNOPSIS">SYNOPSIS</b><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hexpeek [OPTIONS] INFILE0 [INFILE1]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hexview [OPTIONS] INFILE0 [INFILE1]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hexDump [OPTIONS] INFILE0 [INFILE1]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hexlist [OPTIONS] INFILE0 [INFILE1]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hexpack [OPTIONS] INFILE0 [INFILE1]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hexdiff [OPTIONS] INFILE0 [INFILE1]<br>
+<br>
+<b id="DESCRIPTION">DESCRIPTION</b><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hexpeek (TM) is a binary editor designed for efficient operation on huge<br>
+&nbsp;&nbsp;&nbsp;&nbsp;files, but works on any file. It is not plagued by size-related crashes,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;freezes, and glitches because it does not attempt to map files into its<br>
+&nbsp;&nbsp;&nbsp;&nbsp;memory; instead, it operates on files directly to fulfill user commands.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hexpeek has four main modes of operation: prompt, command, pack, and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;recovery. Prompt mode is entered by default, subject to <a href="#OPTIONS">OPTIONS</a>. When<br>
+&nbsp;&nbsp;&nbsp;&nbsp;invoked as hexview, hexDump, hexlist, hexpack, or hexdiff, hexpeek runs as<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if given one of the flags -r, -dump, -list, -pack, or -diff respectively.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Except when specifically indicated otherwise, hexpeek input and output are<br>
+&nbsp;&nbsp;&nbsp;&nbsp;in unprefixed hexadecimal. This allows the user to work in hexadecimal<br>
+&nbsp;&nbsp;&nbsp;&nbsp;without needing to prefix every number with "0x".<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Thank you for trying hexpeek. Send your comments to hexpeek@hexpeek.com.<br>
+<br>
+<b id="OPTIONS">OPTIONS</b><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Flags starting with "+" invert the respective flags with "-".<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-h&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Print usage text about commonly used options; then exit.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-help&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Print more complete help text; then exit.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-v&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Print short version string; then exit.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-version&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Print long version string; then exit.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-license&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Print license text; then exit.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span id="option_-d">-d</span> &lt;FD&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Treat &lt;FD&gt;, a _decimal_ integer, as an already-open file<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;descriptor and use it as the next file. Functionality on<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;non-seekable files is limited (see <a href="#LIMITATIONS">LIMITATIONS</a> below).<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-r&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Open subsequent infiles read-only.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-w&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Open subsequent infiles writeable.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-W&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Like -w, but do not creat infiles that do not exist.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;+ik&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Disable insert and kill commands.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span id="option_-x">-x</span> &lt;CMDS&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Execute semicolon-delimited commands (see <a href="#COMMANDS">COMMANDS</a> below).<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span id="option_-dump">-dump</span> , -list&nbsp;&nbsp;&nbsp;Dump a whole single infile. Same as "-x 0:max".<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span id="option_-pack">-pack</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Treat infile as a hexpeek dump and pack it back into the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;outfile as binary. For best results, run with the same<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;option flags with which the original dump was created.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-diff&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Diff two files. Same as "-x '$0@0:max~$1@0:max'".<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-s &lt;START&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;With -dump or -diff, start output at given file offset.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-l &lt;LEN&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Like -s, but stop output after &lt;LEN&gt; octets are processed.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-o &lt;OUTFILE&gt;&nbsp;&nbsp;&nbsp;&nbsp;Write output to the given file.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[-|+]SET [ARG]&nbsp;&nbsp;Set the given setting (for all applicable display modes).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SET may be one of: endian, hex, bits, rlen, slen, line,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cols, group, margin, scalar, prefix, autoskip, diffskip,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text, and ruler. These options accept the same arguments<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and have the same effect as the commands of the same names<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(see <a href="#COMMANDS">COMMANDS</a> below).<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-b , -c , -g&nbsp;&nbsp;&nbsp;&nbsp;Synonyms of -bits , -cols , and -group respectively.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-p&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Output data in plain mode, which is the equivalent of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"-c 0 -g 0 -margin 0 +autoskip +diffskip +text +ruler".<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;+lineterm&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Skip line breaks in output.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span id="option_-format">-format</span> &lt;FMT&gt;&nbsp;&nbsp;&nbsp;Specify group delimiters. This both controls print output<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and allows the delimiters to be silently ignored in data<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;input. Default: "%_l? %_g", which prints a leading space<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;before each group except the zeroth group (if margin &gt; 0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a space will be printed as part of the margin separator).<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-unique&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Skip uniqueness check - assume all infiles are unique.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;See warning in <a href="#LIMITATIONS">LIMITATIONS</a>.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;+tty&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Assume standard streams are not terminals.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-pedantic&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Generate a user-level error if filezone information is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unspecified or ambiguous (instead of auto-inferring what to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;do) or if a print or diff (except with ":max") attempts<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to read beyond end of file (instead of printing nothing).<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-permissive&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Interpret "diff" as an insert command in interactive mode,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allow write commands with "max", and prompt user whether<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to do recovery if a backup file is missing or inaccessible.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[-|+]strict&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Toggle strict failure mode which, when enabled, causes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hexpeek to fail for user-level errors (like a malformed<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;command string). Enabled by default when hexpeek is run<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;non-interactively.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span id="option_-backup">-backup</span> &lt;DEPTH&gt; Backup depth may be 0 (to disable), max (0x20), or any<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;number therebetween. The default depth is 8.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span id="option_-backup">-backup</span> sync&nbsp;&nbsp;&nbsp;&nbsp;Aggressively sync backup to disk.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-recover&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Prompt to revert operations recorded in backup files.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-trace &lt;FILE&gt;&nbsp;&nbsp;&nbsp;Trace to the given file.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Denote end of option flags.<br>
+<br>
+<b id="COMMANDS">COMMANDS</b><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;q[uit]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Quit the program.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;stop&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Exit without unlinking backup files.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;h[elp] [TOPIC]&nbsp;&nbsp;Show general or specific helptext.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;files&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;List open files with their paths (with C escapes for<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;non-printable characters), writeability, lengths, and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current offsets.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;reset [$FILE]&nbsp;&nbsp;&nbsp;Reset the current offset of FILE if specified, otherwise<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reset the current offsets of all open infiles.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;settings&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;List the values of various settings.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span id="cmd_endian">endian</span>&lt;b|l&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Set big- (default) or little-endian mode. Little-endian<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mode is not compatible with zero group width.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span id="cmd_hex">hex</span>[l|u]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Switch to hexadecimal display mode. The optional last<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;character may be used to set the case of hex numerals to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lower (default) or upper.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span id="cmd_bits">bits</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Switch to bits display mode. This affects file data only,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;not scalar (control) information.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;rlen &lt;WIDTH&gt;&nbsp;&nbsp;&nbsp;&nbsp;Set default read length for the current display mode.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;slen &lt;WIDTH&gt;&nbsp;&nbsp;&nbsp;&nbsp;Set search print length for the current display mode.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If 0, print only address of search match.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;line &lt;WIDTH&gt;&nbsp;&nbsp;&nbsp;&nbsp;Set line width for the current display mode; 0 disables.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span id="cmd_cols">cols</span> &lt;WIDTH&gt;&nbsp;&nbsp;&nbsp;&nbsp;Set rlen, slen, and line.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span id="cmd_group">group</span> &lt;WIDTH&gt;&nbsp;&nbsp;&nbsp;Set group width for the current display mode; 0 disables.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This option controls how many octets are printed between<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;spaces (or other delimiters specified by -format).<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span id="cmd_margin">margin</span> &lt;WIDTH&gt;&nbsp;&nbsp;Set octet width of printed file offset; 0 disables; "full"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sets to maximum available width (default).<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span id="cmd_scalar">scalar</span> &lt;BASE&gt;&nbsp;&nbsp;&nbsp;Interpret scalar input according to the given &lt;BASE&gt;. Valid<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arguments are 0x10 (default) and 0. If 0, scalar input are<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;interpreted as decimal unless prefixed with "0x" (hex) or<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"0" (octal). This flag does not affect scalar output.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[+]prefix&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Print scalars with a "0x" prefix (default off).<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[+]autoskip&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Toggle autoskip mode. If on (default when interactive),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;repeated lines in dumps are replaced with "*".<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[+]diffskip&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Toggle diffskip mode. If on, identical lines in diffs are<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;skipped.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[+]<span id="cmd_text">text</span>[=CODE]&nbsp;&nbsp;Toggle dump of text characters in a column to the right of<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print output. The optional argument controls the character<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;encoding and should be ascii or ebcdic. Defaults on when<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;interactive and line width is non-zero.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[+]ruler&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Toggle octet ruler.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span id="cmd_Numeric">Numeric</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[+][$FILE@][HEXOFF][,HEXLEN][+][SUBCOMMAND]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[+][$FILE@][HEXOFF][:HEXLIM][+][SUBCOMMAND]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^--------filezone-------^<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Execute a subcommand over a given filezone. If specified, FILE must be<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a numeric index; otherwise, file $0 will be used.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HEXOFF may be used to specify:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. an absolute file offset if positive,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. a relative offset from file end if negative,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. "len" (or "-0") for one past last known file byte, or<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4. the current offset if "@@" or not given.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HEXLEN is an optional length argument to the subcommand.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HEXLIM specifies a non-inclusive upper bound, and may be:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1. numeric (equivalent to HEXLEN := HEXLIM - HEXOFF),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. "len" (or "-0") for known file length, or<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3. "max" to read maximum possible data.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"max" may differ from "len" on non-regular files and is not allowed<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with write commands.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SUBCOMMAND may be one of: p, /, ~, r, i, k, their long forms, and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;offset. If no subcommand is specified, an implicit print is done.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If "+" precedes the filezone, file offset will be incremented before<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;subcommand is run by the number of octets to be processed. If instead<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+" follows, file offset will be incremented after subcommand is run<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;by the number of octets processed.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;An empty line at the prompt is equivalent to "+", and may be used to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;page through a file.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;p[rint][v] , v<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Output data starting at file offset. If HEXLEN is specified, that many<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;octets are read; otherwise, the default number of octets are read. The<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;output includes a left margin with file offset information. When "p"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is given explicitly, offset start is outputted before file data.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Including "v" prints verbosely: each output line shows the file offset<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;and data for just one octet with hexadecimal, decimal, octal, bits,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;high bit/low bit/bit count, and text formats shown side-by-side.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If autoskip is enabled, repeated lines are replaced with a single "*".<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;offset<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Seek to the filezone offset and print it. Useful in scripts.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span id="cmd_search">search</span> &lt;PATTERN&gt; , /&lt;PATTERN&gt;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Search for the argument data within the specified filezone (or to file<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end if unspecified). A valid PATTERN is either:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1) fully specified octets in hexadecimal or bits (depending on<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mode), any number of spaces between octets, and the "."<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;character (which&nbsp;&nbsp;matches any value); or<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2) a filezone of the form described above, in which case data<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;from that zone is used as search input. If filezone length is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unspecified, the default length of 1 is used.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If the search succeeds, the file offset is set to the beginning of the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;first found match; unless "+" follows the filezone, in which case the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file offset is set to immediately _after_ the first found match or<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to immediately _after_ the search area if there was no match.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span id="cmd_diff">~</span>[ ][FILEZONE]<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Perform a diff of two filezones. If no argument is given and two files<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;are open, the diff is done between the two files. If two octets at a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;given relative offset are the same, they are printed as underscores.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If diffskip is enabled, identical lines are not printed.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;/~[ ][FILEZONE]<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Search for the next difference between two filezones.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span id="cmd_replace">r[eplace ]</span>&lt;PATTERN&gt;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Replace octets in the filezone with the argument data. The argument<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is of the same form as for the search command, but the "." matching<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;character is not recognized. If HEXLEN is specified and is greater than<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the octet length of the input data, the data will be repeated to fill<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HEXLEN octets.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span id="cmd_insert">i[nsert ]</span>&lt;PATTERN&gt;<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Like replace, but expand file at file offset by number of octets to<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;be written, thus preserving existing data.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span id="cmd_kill">k[ill]</span> , delete<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Remove the data in the specified filezone. If HEXLEN is unspecified,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;one octet will be removed. Note that a space is required between any<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;numeric portion of the command and "delete".<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ops<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Show operations available to be undone. For each operation the depth,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;operation number, and command string are printed.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span id="cmd_undo">u[ndo]</span> [DEPTH]<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Undo the number of operations specified by DEPTH (defaults to 1).<br>
+<br>
+<b id="EXAMPLES">EXAMPLES</b><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;From beginning of file, print default number of octets.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;10,40&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Print 0x40 octets starting at file offset 0x10.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;,2p&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Print two octets starting at current file offset.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;0:max&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Print out whole file.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;7:1C/.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Within domain starting at file offset 0x7 and ending at 0x1B<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;inclusively, search for the first octet the second nibble<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of which is 1.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;$0@0,10~$1@0,10 Diff the first 0x10 octets of two files.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;0:100 r ff&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Set the first 0x100 octets to 0xff.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;0:len r 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Zero out the whole file (final argument may be "0" or "00").<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;100 r 1122&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Replace the octet at file offset 0x100 with value 0x11 and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the octet at file offset 0x101 with value 0x22.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-1r33&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Replace the last octet in the file with the value 0x33.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;i 44&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Insert one octet with value 0x44 before the current offset.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;len i 5566&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Append two octets to file with values 0x55 and 0x66.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;k&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Remove one octet at the current file offset.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1:3k&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Remove the first and second octets of the file.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-1k&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Remove the last octet of the file.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;20:60 r @30,3&nbsp;&nbsp;&nbsp;Replace the 0x40 octet chunk starting at 0x20 with the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;values located in 0x30 through 0x32 repeated.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;3 i @0:len&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Insert a copy of the whole file starting at offset 3.<br>
+<br>
+<b id="DEFAULTS">DEFAULTS</b><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Unless set on the command line, column width defaults to the greatest<br>
+&nbsp;&nbsp;&nbsp;&nbsp;power of 2 number of octets that fit in an 80 character terminal.<br>
+<br>
+<b id="LIMITATIONS">LIMITATIONS</b><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hexpeek requires (and attempts to enforce) that each infile refers to a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;unique file. Data corruption may result if the same file is opened as<br>
+&nbsp;&nbsp;&nbsp;&nbsp;multiple infiles during a hexpeek run.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Functionality on non-seekable files is inherently limited because hexpeek<br>
+&nbsp;&nbsp;&nbsp;&nbsp;operates on them with a one-way seek. Thus, you can not seek backwards and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;post-incrementation for reads is always in effect. Moreover, the current<br>
+&nbsp;&nbsp;&nbsp;&nbsp;offset has no impact on write operations (a duplex connection is assumed).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Finally, the backup function does not work with non-seekable files for<br>
+&nbsp;&nbsp;&nbsp;&nbsp;obvious reasons.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The insert and kill commands are inherently inefficient because they must<br>
+&nbsp;&nbsp;&nbsp;&nbsp;move all the data after the point of insertion or deletion. Consider<br>
+&nbsp;&nbsp;&nbsp;&nbsp;combining repeated insertions (or kills) into one large operation to limit<br>
+&nbsp;&nbsp;&nbsp;&nbsp;the amount of time spent in file rearrangement.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Maximum line, group, and search argument octet width are 0x10000.<br>
+<br>
+<b id="BACKUP_AND_RECOVERY">BACKUP AND RECOVERY</b><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;When in write mode, unless backup depth is 0, hexpeek creates 2 hidden<br>
+&nbsp;&nbsp;&nbsp;&nbsp;backup files with file extension hexpeek-backup. Before executing any<br>
+&nbsp;&nbsp;&nbsp;&nbsp;writeable command, hexpeek writes information to a backup file which is<br>
+&nbsp;&nbsp;&nbsp;&nbsp;sufficient to recover previous data file state in case of program crash or<br>
+&nbsp;&nbsp;&nbsp;&nbsp;user error.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;When an error occurs, use the undo command to revert it; or use stop and<br>
+&nbsp;&nbsp;&nbsp;&nbsp;then invoke 'hexpeek -recover'. Otherwise, on successful exit, hexpeek<br>
+&nbsp;&nbsp;&nbsp;&nbsp;automatically unlinks the backup files. A redo can be performed with the<br>
+&nbsp;&nbsp;&nbsp;&nbsp;command line history functionality (if built with support).<br>
+<br>
+<b id="VERSION">VERSION</b><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hexpeek version 1.1.20250722<br>
+<br>
+<b id="AUTHOR">AUTHOR</b><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Copyright 2020, 2025 Michael Reilly. ALL WARRANTIES DISCLAIMED.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hexpeek is a trademark of Michael Reilly.<br>
+<br>
+<b id="SEE ALSO">SEE ALSO</b><br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;https://www.hexpeek.com<br>
+
+</body>

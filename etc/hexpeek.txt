@@ -1,0 +1,382 @@
+NAME
+
+    hexpeek - edit, dump, pack, and diff binary files in hex and bits
+
+SYNOPSIS
+
+    hexpeek [OPTIONS] INFILE0 [INFILE1]
+    hexview [OPTIONS] INFILE0 [INFILE1]
+    hexDump [OPTIONS] INFILE0 [INFILE1]
+    hexlist [OPTIONS] INFILE0 [INFILE1]
+    hexpack [OPTIONS] INFILE0 [INFILE1]
+    hexdiff [OPTIONS] INFILE0 [INFILE1]
+
+DESCRIPTION
+
+    hexpeek (TM) is a binary editor designed for efficient operation on huge
+    files, but works on any file. It is not plagued by size-related crashes,
+    freezes, and glitches because it does not attempt to map files into its
+    memory; instead, it operates on files directly to fulfill user commands.
+
+    hexpeek has four main modes of operation: prompt, command, pack, and
+    recovery. Prompt mode is entered by default, subject to OPTIONS. When
+    invoked as hexview, hexDump, hexlist, hexpack, or hexdiff, hexpeek runs as
+    if given one of the flags -r, -dump, -list, -pack, or -diff respectively.
+
+    Except when specifically indicated otherwise, hexpeek input and output are
+    in unprefixed hexadecimal. This allows the user to work in hexadecimal
+    without needing to prefix every number with "0x".
+
+    Thank you for trying hexpeek. Send your comments to hexpeek@hexpeek.com.
+
+OPTIONS
+
+    Flags starting with "+" invert the respective flags with "-".
+
+    -h              Print usage text about commonly used options; then exit.
+
+    -help           Print more complete help text; then exit.
+
+    -v              Print short version string; then exit.
+
+    -version        Print long version string; then exit.
+
+    -license        Print license text; then exit.
+
+    -d <FD>         Treat <FD>, a _decimal_ integer, as an already-open file
+                    descriptor and use it as the next file. Functionality on
+                    non-seekable files is limited (see LIMITATIONS below).
+
+    -r              Open subsequent infiles read-only.
+
+    -w              Open subsequent infiles writeable.
+
+    -W              Like -w, but do not creat infiles that do not exist.
+
+    +ik             Disable insert and kill commands.
+
+    -x <CMDS>       Execute semicolon-delimited commands (see COMMANDS below).
+
+    -dump , -list   Dump a whole single infile. Same as "-x 0:max".
+
+    -pack           Treat infile as a hexpeek dump and pack it back into the
+                    outfile as binary. For best results, run with the same
+                    option flags with which the original dump was created.
+
+    -diff           Diff two files. Same as "-x '$0@0:max~$1@0:max'".
+
+    -s <START>      With -dump or -diff, start output at given file offset.
+
+    -l <LEN>        Like -s, but stop output after <LEN> octets are processed.
+
+    -o <OUTFILE>    Write output to the given file.
+
+    [-|+]SET [ARG]  Set the given setting (for all applicable display modes).
+                    SET may be one of: endian, hex, bits, rlen, slen, line,
+                    cols, group, margin, scalar, prefix, autoskip, diffskip,
+                    text, and ruler. These options accept the same arguments
+                    and have the same effect as the commands of the same names
+                    (see COMMANDS below).
+
+    -b , -c , -g    Synonyms of -bits , -cols , and -group respectively.
+
+    -p              Output data in plain mode, which is the equivalent of
+                    "-c 0 -g 0 -margin 0 +autoskip +diffskip +text +ruler".
+
+    +lineterm       Skip line breaks in output.
+
+    -format <FMT>   Specify group delimiters. This both controls print output
+                    and allows the delimiters to be silently ignored in data
+                    input. Default: "%_l? %_g", which prints a leading space
+                    before each group except the zeroth group (if margin > 0,
+                    a space will be printed as part of the margin separator).
+
+    -unique         Skip uniqueness check - assume all infiles are unique.
+                    See warning in LIMITATIONS.
+
+    +tty            Assume standard streams are not terminals.
+
+    -pedantic       Generate a user-level error if filezone information is
+                    unspecified or ambiguous (instead of auto-inferring what to
+                    do) or if a print or diff (except with ":max") attempts
+                    to read beyond end of file (instead of printing nothing).
+
+    -permissive     Interpret "diff" as an insert command in interactive mode,
+                    allow write commands with "max", and prompt user whether
+                    to do recovery if a backup file is missing or inaccessible.
+
+    [-|+]strict     Toggle strict failure mode which, when enabled, causes
+                    hexpeek to fail for user-level errors (like a malformed
+                    command string). Enabled by default when hexpeek is run
+                    non-interactively.
+
+    -backup <DEPTH> Backup depth may be 0 (to disable), max (0x20), or any
+                    number therebetween. The default depth is 8.
+
+    -backup sync    Aggressively sync backup to disk.
+
+    -recover        Prompt to revert operations recorded in backup files.
+
+    -trace <FILE>   Trace to the given file.
+
+    --              Denote end of option flags.
+
+COMMANDS
+
+    q[uit]          Quit the program.
+
+    stop            Exit without unlinking backup files.
+
+    h[elp] [TOPIC]  Show general or specific helptext.
+
+    files           List open files with their paths (with C escapes for
+                    non-printable characters), writeability, lengths, and
+                    current offsets.
+
+    reset [$FILE]   Reset the current offset of FILE if specified, otherwise
+                    reset the current offsets of all open infiles.
+
+    settings        List the values of various settings.
+
+    endian<b|l>     Set big- (default) or little-endian mode. Little-endian
+                    mode is not compatible with zero group width.
+
+    hex[l|u]        Switch to hexadecimal display mode. The optional last
+                    character may be used to set the case of hex numerals to
+                    lower (default) or upper.
+
+    bits            Switch to bits display mode. This affects file data only,
+                    not scalar (control) information.
+
+    rlen <WIDTH>    Set default read length for the current display mode.
+
+    slen <WIDTH>    Set search print length for the current display mode.
+                    If 0, print only address of search match.
+
+    line <WIDTH>    Set line width for the current display mode; 0 disables.
+
+    cols <WIDTH>    Set rlen, slen, and line.
+
+    group <WIDTH>   Set group width for the current display mode; 0 disables.
+                    This option controls how many octets are printed between
+                    spaces (or other delimiters specified by -format).
+
+    margin <WIDTH>  Set octet width of printed file offset; 0 disables; "full"
+                    sets to maximum available width (default).
+
+    scalar <BASE>   Interpret scalar input according to the given <BASE>. Valid
+                    arguments are 0x10 (default) and 0. If 0, scalar input are
+                    interpreted as decimal unless prefixed with "0x" (hex) or
+                    "0" (octal). This flag does not affect scalar output.
+
+    [+]prefix       Print scalars with a "0x" prefix (default off).
+
+    [+]autoskip     Toggle autoskip mode. If on (default when interactive),
+                    repeated lines in dumps are replaced with "*".
+
+    [+]diffskip     Toggle diffskip mode. If on, identical lines in diffs are
+                    skipped.
+
+    [+]text[=CODE]  Toggle dump of text characters in a column to the right of
+                    print output. The optional argument controls the character
+                    encoding and should be ascii or ebcdic. Defaults on when
+                    interactive and line width is non-zero.
+
+    [+]ruler        Toggle octet ruler.
+
+    Numeric         [+][$FILE@][HEXOFF][,HEXLEN][+][SUBCOMMAND]
+                    [+][$FILE@][HEXOFF][:HEXLIM][+][SUBCOMMAND]
+                       ^--------filezone-------^
+
+        Execute a subcommand over a given filezone. If specified, FILE must be
+        a numeric index; otherwise, file $0 will be used.
+
+        HEXOFF may be used to specify:
+                    1. an absolute file offset if positive,
+                    2. a relative offset from file end if negative,
+                    3. "len" (or "-0") for one past last known file byte, or
+                    4. the current offset if "@@" or not given.
+
+        HEXLEN is an optional length argument to the subcommand.
+
+        HEXLIM specifies a non-inclusive upper bound, and may be:
+                    1. numeric (equivalent to HEXLEN := HEXLIM - HEXOFF),
+                    2. "len" (or "-0") for known file length, or
+                    3. "max" to read maximum possible data.
+        "max" may differ from "len" on non-regular files and is not allowed
+        with write commands.
+
+        SUBCOMMAND may be one of: p, /, ~, r, i, k, their long forms, and
+        offset. If no subcommand is specified, an implicit print is done.
+
+        If "+" precedes the filezone, file offset will be incremented before
+        subcommand is run by the number of octets to be processed. If instead
+        "+" follows, file offset will be incremented after subcommand is run
+        by the number of octets processed.
+
+        An empty line at the prompt is equivalent to "+", and may be used to
+        page through a file.
+
+    p[rint][v] , v
+
+        Output data starting at file offset. If HEXLEN is specified, that many
+        octets are read; otherwise, the default number of octets are read. The
+        output includes a left margin with file offset information. When "p"
+        is given explicitly, offset start is outputted before file data.
+
+        Including "v" prints verbosely: each output line shows the file offset
+        and data for just one octet with hexadecimal, decimal, octal, bits,
+        high bit/low bit/bit count, and text formats shown side-by-side.
+
+        If autoskip is enabled, repeated lines are replaced with a single "*".
+
+    offset
+
+        Seek to the filezone offset and print it. Useful in scripts.
+
+    search <PATTERN> , /<PATTERN>
+
+        Search for the argument data within the specified filezone (or to file
+        end if unspecified). A valid PATTERN is either:
+            (1) fully specified octets in hexadecimal or bits (depending on
+                mode), any number of spaces between octets, and the "."
+                character (which  matches any value); or
+            (2) a filezone of the form described above, in which case data
+                from that zone is used as search input. If filezone length is
+                unspecified, the default length of 1 is used.
+
+        If the search succeeds, the file offset is set to the beginning of the
+        first found match; unless "+" follows the filezone, in which case the
+        file offset is set to immediately _after_ the first found match or
+        to immediately _after_ the search area if there was no match.
+
+    ~[ ][FILEZONE]
+
+        Perform a diff of two filezones. If no argument is given and two files
+        are open, the diff is done between the two files. If two octets at a
+        given relative offset are the same, they are printed as underscores.
+        If diffskip is enabled, identical lines are not printed.
+
+    /~[ ][FILEZONE]
+
+        Search for the next difference between two filezones.
+
+    r[eplace ]<PATTERN>
+
+        Replace octets in the filezone with the argument data. The argument
+        is of the same form as for the search command, but the "." matching
+        character is not recognized. If HEXLEN is specified and is greater than
+        the octet length of the input data, the data will be repeated to fill
+        HEXLEN octets.
+
+    i[nsert ]<PATTERN>
+
+        Like replace, but expand file at file offset by number of octets to
+        be written, thus preserving existing data.
+
+    k[ill] , delete
+
+        Remove the data in the specified filezone. If HEXLEN is unspecified,
+        one octet will be removed. Note that a space is required between any
+        numeric portion of the command and "delete".
+
+    ops
+
+        Show operations available to be undone. For each operation the depth,
+        operation number, and command string are printed.
+
+    u[ndo] [DEPTH]
+
+        Undo the number of operations specified by DEPTH (defaults to 1).
+
+EXAMPLES
+
+    0               From beginning of file, print default number of octets.
+
+    10,40           Print 0x40 octets starting at file offset 0x10.
+
+    ,2p             Print two octets starting at current file offset.
+
+    0:max           Print out whole file.
+
+    7:1C/.1         Within domain starting at file offset 0x7 and ending at 0x1B
+                    inclusively, search for the first octet the second nibble
+                    of which is 1.
+
+    $0@0,10~$1@0,10 Diff the first 0x10 octets of two files.
+
+    0:100 r ff      Set the first 0x100 octets to 0xff.
+
+    0:len r 0       Zero out the whole file (final argument may be "0" or "00").
+
+    100 r 1122      Replace the octet at file offset 0x100 with value 0x11 and
+                    the octet at file offset 0x101 with value 0x22.
+
+    -1r33           Replace the last octet in the file with the value 0x33.
+
+    i 44            Insert one octet with value 0x44 before the current offset.
+
+    len i 5566      Append two octets to file with values 0x55 and 0x66.
+
+    k               Remove one octet at the current file offset.
+
+    1:3k            Remove the first and second octets of the file.
+
+    -1k             Remove the last octet of the file.
+
+    20:60 r @30,3   Replace the 0x40 octet chunk starting at 0x20 with the
+                    values located in 0x30 through 0x32 repeated.
+
+    3 i @0:len      Insert a copy of the whole file starting at offset 3.
+
+DEFAULTS
+
+    Unless set on the command line, column width defaults to the greatest
+    power of 2 number of octets that fit in an 80 character terminal.
+
+LIMITATIONS
+
+    hexpeek requires (and attempts to enforce) that each infile refers to a
+    unique file. Data corruption may result if the same file is opened as
+    multiple infiles during a hexpeek run.
+
+    Functionality on non-seekable files is inherently limited because hexpeek
+    operates on them with a one-way seek. Thus, you can not seek backwards and
+    post-incrementation for reads is always in effect. Moreover, the current
+    offset has no impact on write operations (a duplex connection is assumed).
+    Finally, the backup function does not work with non-seekable files for
+    obvious reasons.
+
+    The insert and kill commands are inherently inefficient because they must
+    move all the data after the point of insertion or deletion. Consider
+    combining repeated insertions (or kills) into one large operation to limit
+    the amount of time spent in file rearrangement.
+
+    Maximum line, group, and search argument octet width are 0x10000.
+
+BACKUP AND RECOVERY
+
+    When in write mode, unless backup depth is 0, hexpeek creates 2 hidden
+    backup files with file extension hexpeek-backup. Before executing any
+    writeable command, hexpeek writes information to a backup file which is
+    sufficient to recover previous data file state in case of program crash or
+    user error.
+
+    When an error occurs, use the undo command to revert it; or use stop and
+    then invoke 'hexpeek -recover'. Otherwise, on successful exit, hexpeek
+    automatically unlinks the backup files. A redo can be performed with the
+    command line history functionality (if built with support).
+
+VERSION
+
+    hexpeek version 1.1.20250722
+
+AUTHOR
+
+    Copyright 2020, 2025 Michael Reilly. ALL WARRANTIES DISCLAIMED.
+
+    hexpeek is a trademark of Michael Reilly.
+
+SEE ALSO
+
+    https://www.hexpeek.com

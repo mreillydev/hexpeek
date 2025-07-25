@@ -1,0 +1,98 @@
+#!/bin/sh
+# Copyright 2025 Michael Reilly (mreilly@mreilly.dev).
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+# 3. Neither the names of the copyright holders nor the names of the
+#    contributors may be used to endorse or promote products derived from
+#    this software without specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+# PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS
+# OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+# OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+HEXPEEK_TESTLEVEL="advanced"
+. "$HEXPEEK_BASEDIR/test/shcommon"
+. "$Testbin/randtest"
+
+# also defined in randgen.c
+MajorMin=1
+MajorMax=5
+MajorAny=9
+
+pluginsmode=0
+genfile_min_len=10000
+genfile_max_len=50000
+genfile_unlink=0
+
+printf "(randtests"
+
+if [ "-plugins" = "$1" ]; then
+    printf " -plugins"
+    pluginsmode=1
+    shift
+fi
+if [ "-size" = "$1" ]; then
+    printf " -size"
+    if [ ! -n "$2" ]; then
+        fail
+    fi
+    genfile_min_len=$2
+    if [ ! -n "$3" ]; then
+        fail
+    fi
+    genfile_max_len=$3
+    shift
+    shift
+    shift
+fi
+if [ "-clean" = "$1" ]; then
+    printf " -clean"
+    genfile_unlink=1
+    shift
+fi
+printf ")\n"
+
+filecount=1
+while [ $filecount -le 2 ]; do
+    # One of each kind of operation
+    majoridx=$MajorMin
+    while [ $majoridx -le $MajorMax ]; do
+        randtest "nil" $filecount $majoridx 1 1 1 1 $pluginsmode $genfile_min_len $genfile_max_len $genfile_unlink
+        majoridx=$(($majoridx + 1))
+    done
+    
+    # Random operations
+    minoridx=1
+    minorlimit=2
+    if [ $pluginsmode -eq 1 ]; then
+        minorlimit=3
+    fi
+    while [ $minoridx -lt $minorlimit ]; do
+        randtest "nil" $filecount $MajorAny $minoridx 1 8 0 $pluginsmode $genfile_min_len $genfile_max_len $genfile_unlink
+        randtest "nil" $filecount $MajorAny $minoridx 1 16 8 $pluginsmode $genfile_min_len $genfile_max_len $genfile_unlink
+        randtest "nil" $filecount $MajorAny $minoridx 30 64 32 $pluginsmode $genfile_min_len $genfile_max_len $genfile_unlink
+        if [ $filecount -lt 2 ] && [ $minoridx -lt 2 ]; then
+            randtest "nil" $filecount $MajorAny $minoridx 2 10 1 $pluginsmode $genfile_min_len $genfile_max_len $genfile_unlink
+        fi
+        minoridx=$(($minoridx + 1))
+    done
+
+    filecount=$(($filecount + 1))
+done
+
+exit 0

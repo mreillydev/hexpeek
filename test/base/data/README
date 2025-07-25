@@ -1,0 +1,114 @@
+                 Brief descriptions of data files used in tests
+                 ----------------------------------------------
+
+basictest0.hexpeek-test-data
+    Simple text file.
+
+basictest0.hexpeek-test-data-exp
+    Copy of basictest0.hexpeek-test-data.
+
+basictest1.hexpeek-test-data
+    Consists of the hexadecimal octet string
+      02030507 0B0D1113 171D1F25 292B2F35 3B3D4347 494F5359 6165676B 6D717F83
+      898B9597 9DA3A7AD B3B5BFC1 C5C7D3DF E3E5E9EF F1FB
+    (consecutive 1 octet primes) repeated.
+
+basictest1.hexpeek-test-data-exp
+    Empty file.
+
+basictest2.hexpeek-test-data
+    Consists of the same repeated string as basictest1.hexpeek-test-data, but
+    the file is of longer length.
+
+basictest2.hexpeek-test-data-exp
+    Copy of basictest2.hexpeek-test-data.
+
+basictest3.hexpeek-test-data
+    Consists of the hexadecimal octet string 11223344 55667788 repeated.
+
+basictest3.hexpeek-test-data-exp
+    Copy of basictest3.hexpeek-test-data.
+
+basictest4.hexpeek-test-data
+    Consists of consecutive primes stored little endian every 4 octets; then
+    total file length truncated to 83789 decimal octets.
+
+basictest4.hexpeek-test-data-exp
+    Result of basictest4.hexpeek-test-data after running basictest4.in
+    operations on it.
+
+basictest5.hexpeek-test-data
+    Consists of the hexadecimal octet string
+      00010102 0305080D 15223759 90E9
+    (fibonacci) repeated.
+
+basictest5.hexpeek-test-data-exp
+    Result of running basictest5.in operations on basictest5.hexpeek-test-data.
+
+basictest6-*.hexpeek-test-data
+    Upper and lower case (respectively) hexpeek dumps of
+    basictest1.hexpeek-test-data.
+
+basictest6-*.hexpeek-test-data-exp
+    Result of running basictest6.in operations on
+    basictest6-*.hexpeek-test-data.
+
+basictest7-0.hexpeek-test-data
+    Consists of the hexadecimal octet string
+      00010306 0A0F151C 242D3742 4E5B6978 8899ABBE D2E7FD
+    (consecutive incrementation by natural numbers) repeated.
+
+basictest7-1.hexpeek-test-data
+    Copy of basictest7-0.hexpeek-test-data, with data in file offsets 10:17,
+    1FF:213, FF32:11111, and 19E5D:19FC0 bit-flipped and the string DEADBEEF
+    appended.
+
+basictest7-*.hexpeek-test-data-exp
+    Copies of basictest7-*.hexpeek-test-data (respectively).
+
+basictest1*.hexpeek-test-data*
+    Variants of original basictests with command tweaks for version 1.1.
+
+exampletest*.hexpeek-test-data
+    All of these files are the hex string 0x00112233445566778899aabbccddeeff
+    repeated to create a file of length 0x1000.
+
+exampletest20-1.hexpeek-test-data
+    Modified by running these commands: '2 r ff' and '123 r 00'.
+
+difftest-*.hexpeek-test-data
+    Copies of basictest7-*.hexpeek-test-data (respectively).
+
+endianltest.hexpeek-test-data
+    Copy of basictest2.hexpeek-test-data.
+
+fdrectest.hexpeek-test-data
+    Consists of the hexadecimal octet string 7715 repeated.
+
+flagtests.hexpeek-test-data
+    Copy of basictest1.hexpeek-test-data.
+
+packtest.hexpeek-test-data
+    Copy of basictest3.hexpeek-test-data.
+
+rectest.hexpeek-test-data
+    Consists of the hexadecimal octet string
+      00010203 04050607 08090A0B 0C0D0E0F 10111213 14151617 18191A1B 1C1D1E1F
+      20212223 24252627 28292A2B 2C2D2E2F 30313233 34353637 38393A3B 3C3D3E3F
+      40414243 44454647 48494A4B 4C4D4E4F 50515253 54555657 58595A5B 5C5D5E5F
+      60616263 64656667 68696A6B 6C6D6E6F 70717273 74757677 78797A7B 7C7D7E7F
+      80818283 84858687 88898A8B 8C8D8E8F 90919293 94959697 98999A9B 9C9D9E9F
+      A0A1A2A3 A4A5A6A7 A8A9AAAB ACADAEAF B0B1B2B3 B4B5B6B7 B8B9BABB BCBDBEBF
+      C0C1C2C3 C4C5C6C7 C8C9CACB CCCDCECF D0D1D2D3 D4D5D6D7 D8D9DADB DCDDDEDF
+      E0E1E2E3 E4E5E6E7 E8E9EAEB ECEDEEEF F0F1F2F3 F4F5F6F7 F8F9FAFB FCFDFEFF
+    (all octets 0 - 0xFF) repeated.
+
+redirecttest.hexpeek-test-data
+    Copy of rectest.hexpeek-test-data, truncated to 200 octets.
+
+sparsetest.hexpeek-test-data
+    Copy of rectest.hexpeek-test-data.
+
+sparsetest.hexpeek-test-data-exp
+    Copy of sparsetest.hexpeek-test-data, with a hole of 20 octets appended,
+    then the hexadecimal string DEADFACE inserted.

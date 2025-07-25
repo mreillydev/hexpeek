@@ -1,0 +1,582 @@
+.TH hexpeek 1 "2025-07-22" "version 1.1.20250722"
+.SH NAME
+.PP
+hexpeek \- edit, dump, pack, and diff binary files in hex and bits
+.PP
+.SH SYNOPSIS
+.PP
+.br
+\fBhexpeek\fR [\fBOPTIONS\fR] INFILE0 [INFILE1]
+.br
+\fBhexview\fR [\fBOPTIONS\fR] INFILE0 [INFILE1]
+.br
+\fBhexDump\fR [\fBOPTIONS\fR] INFILE0 [INFILE1]
+.br
+\fBhexlist\fR [\fBOPTIONS\fR] INFILE0 [INFILE1]
+.br
+\fBhexpack\fR [\fBOPTIONS\fR] INFILE0 [INFILE1]
+.br
+\fBhexdiff\fR [\fBOPTIONS\fR] INFILE0 [INFILE1]
+.PP
+.SH DESCRIPTION
+.PP
+\fBhexpeek\fR (TM) is a binary editor designed for efficient operation on huge
+files, but works on any file. It is not plagued by size\-related crashes,
+freezes, and glitches because it does not attempt to map files into its
+memory; instead, it operates on files directly to fulfill user commands.
+.PP
+\fBhexpeek\fR has four main modes of operation: prompt, command, pack, and
+recovery. Prompt mode is entered by default, subject to \fBOPTIONS\fR. When
+invoked as \fBhexview\fR, \fBhexDump\fR, \fBhexlist\fR, \fBhexpack\fR, or \fBhexdiff\fR, \fBhexpeek\fR runs as
+if given one of the flags \-r, \-dump, \-list, \-pack, or \-diff respectively.
+.PP
+Except when specifically indicated otherwise, \fBhexpeek\fR input and output are
+in unprefixed hexadecimal. This allows the user to work in hexadecimal
+without needing to prefix every number with "0x".
+.PP
+Thank you for trying \fBhexpeek\fR. Send your comments to \fBhexpeek\fR@hexpeek.com.
+.PP
+.SH OPTIONS
+.PP
+Flags starting with "+" invert the respective flags with "\-".
+.PP
+.TP 16
+\fB-h\fR
+Print usage text about commonly used options; then exit.
+.PP
+.TP 16
+\fB-help\fR
+Print more complete help text; then exit.
+.PP
+.TP 16
+\fB-v\fR
+Print short version string; then exit.
+.PP
+.TP 16
+\fB-version\fR
+Print long version string; then exit.
+.PP
+.TP 16
+\fB-license\fR
+Print license text; then exit.
+.PP
+.TP 16
+\fB-d <FD>\fR
+Treat <FD>, a _decimal_ integer, as an already\-open file
+descriptor and use it as the next file. Functionality on
+non\-seekable files is limited (see \fBLIMITATIONS\fR below).
+.PP
+.TP 16
+\fB-r\fR
+Open subsequent infiles read\-only.
+.PP
+.TP 16
+\fB-w\fR
+Open subsequent infiles writeable.
+.PP
+.TP 16
+\fB-W\fR
+Like \-w, but do not creat infiles that do not exist.
+.PP
+.TP 16
+\fB+ik\fR
+Disable insert and kill commands.
+.PP
+.TP 16
+\fB-x <CMDS>\fR
+Execute semicolon\-delimited commands (see \fBCOMMANDS\fR below).
+.PP
+.TP 16
+\fB-dump , -list\fR
+Dump a whole single infile. Same as "\-x 0:max".
+.PP
+.TP 16
+\fB-pack\fR
+Treat infile as a \fBhexpeek\fR dump and pack it back into the
+outfile as binary. For best results, run with the same
+option flags with which the original dump was created.
+.PP
+.TP 16
+\fB-diff\fR
+Diff two files. Same as "\-x \'$0@0:max~$1@0:max\'".
+.PP
+.TP 16
+\fB-s <START>\fR
+With \-dump or \-diff, start output at given file offset.
+.PP
+.TP 16
+\fB-l <LEN>\fR
+Like \-s, but stop output after <LEN> octets are processed.
+.PP
+.TP 16
+\fB-o <OUTFILE>\fR
+Write output to the given file.
+.PP
+.TP 16
+\fB[-|+]SET [ARG]\fR
+Set the given setting (for all applicable display modes).
+SET may be one of: endian, hex, bits, rlen, slen, line,
+cols, group, margin, scalar, prefix, autoskip, diffskip,
+text, and ruler. These options accept the same arguments
+and have the same effect as the commands of the same names
+(see \fBCOMMANDS\fR below).
+.PP
+.TP 16
+\fB-b , -c , -g\fR
+Synonyms of \-bits , \-cols , and \-group respectively.
+.PP
+.TP 16
+\fB-p\fR
+Output data in plain mode, which is the equivalent of
+"\-c 0 \-g 0 \-margin 0 +autoskip +diffskip +text +ruler".
+.PP
+.TP 16
+\fB+lineterm\fR
+Skip line breaks in output.
+.PP
+.TP 16
+\fB-format <FMT>\fR
+Specify group delimiters. This both controls print output
+and allows the delimiters to be silently ignored in data
+input. Default: "%_l? %_g", which prints a leading space
+before each group except the zeroth group (if margin > 0,
+a space will be printed as part of the margin separator).
+.PP
+.TP 16
+\fB-unique\fR
+Skip uniqueness check \- assume all infiles are unique.
+See warning in \fBLIMITATIONS\fR.
+.PP
+.TP 16
+\fB+tty\fR
+Assume standard streams are not terminals.
+.PP
+.TP 16
+\fB-pedantic\fR
+Generate a user\-level error if filezone information is
+unspecified or ambiguous (instead of auto\-inferring what to
+do) or if a print or diff (except with ":max") attempts
+to read beyond end of file (instead of printing nothing).
+.PP
+.TP 16
+\fB-permissive\fR
+Interpret "diff" as an insert command in interactive mode,
+allow write commands with "max", and prompt user whether
+to do recovery if a backup file is missing or inaccessible.
+.PP
+.TP 16
+\fB[-|+]strict\fR
+Toggle strict failure mode which, when enabled, causes
+\fBhexpeek\fR to fail for user\-level errors (like a malformed
+command string). Enabled by default when \fBhexpeek\fR is run
+non\-interactively.
+.PP
+.TP 16
+\fB-backup <DEPTH>\fR
+Backup depth may be 0 (to disable), max (0x20), or any
+number therebetween. The default depth is 8.
+.PP
+.TP 16
+\fB-backup sync\fR
+Aggressively sync backup to disk.
+.PP
+.TP 16
+\fB-recover\fR
+Prompt to revert operations recorded in backup files.
+.PP
+.TP 16
+\fB-trace <FILE>\fR
+Trace to the given file.
+.PP
+.TP 16
+\fB--\fR
+Denote end of option flags.
+.PP
+.SH COMMANDS
+.PP
+.TP 16
+\fBq[uit]\fR
+Quit the program.
+.PP
+.TP 16
+\fBstop\fR
+Exit without unlinking backup files.
+.PP
+.TP 16
+\fBh[elp] [TOPIC]\fR
+Show general or specific helptext.
+.PP
+.TP 16
+\fBfiles\fR
+List open files with their paths (with C escapes for
+non\-printable characters), writeability, lengths, and
+current offsets.
+.PP
+.TP 16
+\fBreset [$FILE]\fR
+Reset the current offset of FILE if specified, otherwise
+reset the current offsets of all open infiles.
+.PP
+.TP 16
+\fBsettings\fR
+List the values of various settings.
+.PP
+.TP 16
+\fBendian<b|l>\fR
+Set big\- (default) or little\-endian mode. Little\-endian
+mode is not compatible with zero group width.
+.PP
+.TP 16
+\fBhex[l|u]\fR
+Switch to hexadecimal display mode. The optional last
+character may be used to set the case of hex numerals to
+lower (default) or upper.
+.PP
+.TP 16
+\fBbits\fR
+Switch to bits display mode. This affects file data only,
+not scalar (control) information.
+.PP
+.TP 16
+\fBrlen <WIDTH>\fR
+Set default read length for the current display mode.
+.PP
+.TP 16
+\fBslen <WIDTH>\fR
+Set search print length for the current display mode.
+If 0, print only address of search match.
+.PP
+.TP 16
+\fBline <WIDTH>\fR
+Set line width for the current display mode; 0 disables.
+.PP
+.TP 16
+\fBcols <WIDTH>\fR
+Set rlen, slen, and line.
+.PP
+.TP 16
+\fBgroup <WIDTH>\fR
+Set group width for the current display mode; 0 disables.
+This option controls how many octets are printed between
+spaces (or other delimiters specified by \-format).
+.PP
+.TP 16
+\fBmargin <WIDTH>\fR
+Set octet width of printed file offset; 0 disables; "full"
+sets to maximum available width (default).
+.PP
+.TP 16
+\fBscalar <BASE>\fR
+Interpret scalar input according to the given <BASE>. Valid
+arguments are 0x10 (default) and 0. If 0, scalar input are
+interpreted as decimal unless prefixed with "0x" (hex) or
+"0" (octal). This flag does not affect scalar output.
+.PP
+.TP 16
+\fB[+]prefix\fR
+Print scalars with a "0x" prefix (default off).
+.PP
+.TP 16
+\fB[+]autoskip\fR
+Toggle autoskip mode. If on (default when interactive),
+repeated lines in dumps are replaced with "*".
+.PP
+.TP 16
+\fB[+]diffskip\fR
+Toggle diffskip mode. If on, identical lines in diffs are
+skipped.
+.PP
+.TP 16
+\fB[+]text[=CODE]\fR
+Toggle dump of text characters in a column to the right of
+print output. The optional argument controls the character
+encoding and should be ascii or ebcdic. Defaults on when
+interactive and line width is non\-zero.
+.PP
+.TP 16
+\fB[+]ruler\fR
+Toggle octet ruler.
+.PP
+.TP 16
+\fBNumeric\fR
+\fB[+][$FILE@][HEXOFF][,HEXLEN][+][SUBCOMMAND]\fR
+\fB[+][$FILE@][HEXOFF][:HEXLIM][+][SUBCOMMAND]\fR
+   \fB^--------filezone-------^\fR
+.PP
+.in +4n
+Execute a subcommand over a given filezone. If specified, FILE must be
+a numeric index; otherwise, file $0 will be used.
+.in
+.PP
+.in +4n
+HEXOFF may be used to specify:
+1. an absolute file offset if positive,
+2. a relative offset from file end if negative,
+3. "len" (or "\-0") for one past last known file byte, or
+4. the current offset if "@@" or not given.
+.in
+.PP
+.in +4n
+HEXLEN is an optional length argument to the subcommand.
+.in
+.PP
+.in +4n
+HEXLIM specifies a non\-inclusive upper bound, and may be:
+1. numeric (equivalent to HEXLEN := HEXLIM \- HEXOFF),
+2. "len" (or "\-0") for known file length, or
+3. "max" to read maximum possible data.
+"max" may differ from "len" on non\-regular files and is not allowed
+with write commands.
+.in
+.PP
+.in +4n
+SUBCOMMAND may be one of: p, /, ~, r, i, k, their long forms, and
+offset. If no subcommand is specified, an implicit print is done.
+.in
+.PP
+.in +4n
+If "+" precedes the filezone, file offset will be incremented before
+subcommand is run by the number of octets to be processed. If instead
+"+" follows, file offset will be incremented after subcommand is run
+by the number of octets processed.
+.in
+.PP
+.in +4n
+An empty line at the prompt is equivalent to "+", and may be used to
+page through a file.
+.in
+.PP
+.TP 16
+\fBp[rint][v] , v\fR
+.PP
+.in +4n
+Output data starting at file offset. If HEXLEN is specified, that many
+octets are read; otherwise, the default number of octets are read. The
+output includes a left margin with file offset information. When "p"
+is given explicitly, offset start is outputted before file data.
+.in
+.PP
+.in +4n
+Including "v" prints verbosely: each output line shows the file offset
+and data for just one octet with hexadecimal, decimal, octal, bits,
+high bit/low bit/bit count, and text formats shown side\-by\-side.
+.in
+.PP
+.in +4n
+If autoskip is enabled, repeated lines are replaced with a single "*".
+.in
+.PP
+.TP 16
+\fBoffset\fR
+.PP
+.in +4n
+Seek to the filezone offset and print it. Useful in scripts.
+.in
+.PP
+.TP 16
+\fBsearch <PATTERN> , /<PATTERN>\fR
+.PP
+.in +4n
+Search for the argument data within the specified filezone (or to file
+end if unspecified). A valid PATTERN is either:
+(1) fully specified octets in hexadecimal or bits (depending on
+mode), any number of spaces between octets, and the "."
+character (which  matches any value); or
+(2) a filezone of the form described above, in which case data
+from that zone is used as search input. If filezone length is
+unspecified, the default length of 1 is used.
+.in
+.PP
+.in +4n
+If the search succeeds, the file offset is set to the beginning of the
+first found match; unless "+" follows the filezone, in which case the
+file offset is set to immediately _after_ the first found match or
+to immediately _after_ the search area if there was no match.
+.in
+.PP
+.TP 16
+\fB~[ ][FILEZONE]\fR
+.PP
+.in +4n
+Perform a diff of two filezones. If no argument is given and two files
+are open, the diff is done between the two files. If two octets at a
+given relative offset are the same, they are printed as underscores.
+If diffskip is enabled, identical lines are not printed.
+.in
+.PP
+.TP 16
+\fB/~[ ][FILEZONE]\fR
+.PP
+.in +4n
+Search for the next difference between two filezones.
+.in
+.PP
+.TP 16
+\fBr[eplace ]<PATTERN>\fR
+.PP
+.in +4n
+Replace octets in the filezone with the argument data. The argument
+is of the same form as for the search command, but the "." matching
+character is not recognized. If HEXLEN is specified and is greater than
+the octet length of the input data, the data will be repeated to fill
+HEXLEN octets.
+.in
+.PP
+.TP 16
+\fBi[nsert ]<PATTERN>\fR
+.PP
+.in +4n
+Like replace, but expand file at file offset by number of octets to
+be written, thus preserving existing data.
+.in
+.PP
+.TP 16
+\fBk[ill] , delete\fR
+.PP
+.in +4n
+Remove the data in the specified filezone. If HEXLEN is unspecified,
+one octet will be removed. Note that a space is required between any
+numeric portion of the command and \fBdelete\fR.
+.in
+.PP
+.TP 16
+\fBops\fR
+.PP
+.in +4n
+Show operations available to be undone. For each operation the depth,
+operation number, and command string are printed.
+.in
+.PP
+.TP 16
+\fBu[ndo] [DEPTH]\fR
+.PP
+.in +4n
+Undo the number of operations specified by DEPTH (defaults to 1).
+.in
+.PP
+.SH EXAMPLES
+.PP
+.TP 16
+\fB0\fR
+From beginning of file, print default number of octets.
+.PP
+.TP 16
+\fB10,40\fR
+Print 0x40 octets starting at file offset 0x10.
+.PP
+.TP 16
+\fB,2p\fR
+Print two octets starting at current file offset.
+.PP
+.TP 16
+\fB0:max\fR
+Print out whole file.
+.PP
+.TP 16
+\fB7:1C/.1\fR
+Within domain starting at file offset 0x7 and ending at 0x1B
+inclusively, search for the first octet the second nibble
+of which is 1.
+.PP
+.TP 16
+\fB$0@0,10~$1@0,10\fR
+Diff the first 0x10 octets of two files.
+.PP
+.TP 16
+\fB0:100 r ff\fR
+Set the first 0x100 octets to 0xff.
+.PP
+.TP 16
+\fB0:len r 0\fR
+Zero out the whole file (final argument may be "0" or "00").
+.PP
+.TP 16
+\fB100 r 1122\fR
+Replace the octet at file offset 0x100 with value 0x11 and
+the octet at file offset 0x101 with value 0x22.
+.PP
+.TP 16
+\fB-1r33\fR
+Replace the last octet in the file with the value 0x33.
+.PP
+.TP 16
+\fBi 44\fR
+Insert one octet with value 0x44 before the current offset.
+.PP
+.TP 16
+\fBlen i 5566\fR
+Append two octets to file with values 0x55 and 0x66.
+.PP
+.TP 16
+\fBk\fR
+Remove one octet at the current file offset.
+.PP
+.TP 16
+\fB1:3k\fR
+Remove the first and second octets of the file.
+.PP
+.TP 16
+\fB-1k\fR
+Remove the last octet of the file.
+.PP
+.TP 16
+\fB20:60 r @30,3\fR
+Replace the 0x40 octet chunk starting at 0x20 with the
+values located in 0x30 through 0x32 repeated.
+.PP
+.TP 16
+\fB3 i @0:len\fR
+Insert a copy of the whole file starting at offset 3.
+.PP
+.SH DEFAULTS
+.PP
+Unless set on the command line, column width defaults to the greatest
+power of 2 number of octets that fit in an 80 character terminal.
+.PP
+.SH LIMITATIONS
+.PP
+\fBhexpeek\fR requires (and attempts to enforce) that each infile refers to a
+unique file. Data corruption may result if the same file is opened as
+multiple infiles during a \fBhexpeek\fR run.
+.PP
+Functionality on non\-seekable files is inherently limited because \fBhexpeek\fR
+operates on them with a one\-way seek. Thus, you can not seek backwards and
+post\-incrementation for reads is always in effect. Moreover, the current
+offset has no impact on write operations (a duplex connection is assumed).
+Finally, the backup function does not work with non\-seekable files for
+obvious reasons.
+.PP
+The insert and kill commands are inherently inefficient because they must
+move all the data after the point of insertion or deletion. Consider
+combining repeated insertions (or kills) into one large operation to limit
+the amount of time spent in file rearrangement.
+.PP
+Maximum line, group, and search argument octet width are 0x10000.
+.PP
+.SH BACKUP AND RECOVERY
+.PP
+When in write mode, unless backup depth is 0, \fBhexpeek\fR creates 2 hidden
+backup files with file extension \fBhexpeek\fR\-backup. Before executing any
+writeable command, \fBhexpeek\fR writes information to a backup file which is
+sufficient to recover previous data file state in case of program crash or
+user error.
+.PP
+When an error occurs, use the undo command to revert it; or use stop and
+then invoke \'\fBhexpeek\fR \-recover\'. Otherwise, on successful exit, \fBhexpeek\fR
+automatically unlinks the backup files. A redo can be performed with the
+command line history functionality (if built with support).
+.PP
+.SH VERSION
+.PP
+hexpeek version 1.1.20250722
+.PP
+.SH AUTHOR
+.PP
+Copyright 2020, 2025 Michael Reilly. ALL WARRANTIES DISCLAIMED.
+.PP
+.br
+hexpeek is a trademark of Michael Reilly.
+.PP
+.SH SEE ALSO
+.PP
+https://www.hexpeek.com

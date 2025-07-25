@@ -1,0 +1,145 @@
+#### unrecognized command
+hexpeek: unrecognized command. Try 'help'.
+#### no numeric input found
+hexpeek: malformed number: no numeric input found
+hexpeek: malformed number: no numeric input found
+hexpeek: malformed number: no numeric input found
+hexpeek: malformed number: no numeric input found
+hexpeek: malformed number: no numeric input found
+#### offset subceeds minimum recognizable file offset
+hexpeek: malformed number: offset subceeds minimum recognizable file offset
+#### offset exceeds maximum recognizable file offset
+hexpeek: malformed number: offset exceeds maximum recognizable file offset
+#### bad negative file offset
+hexpeek: malformed number: bad negative file offset
+#### unexpected data after number
+hexpeek: malformed number: unexpected data after number
+#### negative input not valid
+hexpeek: malformed number: negative input not valid
+#### excessively large input
+hexpeek: malformed number: excessively large input
+#### line width may not exceed 0x10000 octets
+hexpeek: line width may not exceed 0x10000 octets
+#### group width may not exceed 0x10000 octets
+hexpeek: group width may not exceed 0x10000 octets
+#### duplicate '+'
+hexpeek: malformed command: duplicate '+'
+hexpeek: malformed command: duplicate '+'
+#### invalid file number
+hexpeek: malformed command: invalid file number
+hexpeek: malformed command: invalid file number
+hexpeek: malformed command: invalid file number
+hexpeek: malformed command: invalid file number
+hexpeek: malformed command: invalid file number
+hexpeek: malformed command: invalid file number
+hexpeek: malformed command: invalid file number
+hexpeek: malformed command: invalid file number
+#### invalid file offset after '@'
+hexpeek: malformed command: invalid file offset after '@'
+hexpeek: malformed command: invalid file offset after '@'
+hexpeek: malformed command: invalid file offset after '@'
+hexpeek: malformed command: invalid file offset after '@'
+hexpeek: malformed command: invalid file offset after '@'
+hexpeek: malformed command: invalid file offset after '@'
+#### negative length not valid
+hexpeek: malformed number: negative length not valid
+#### duplicate filezone input
+hexpeek: malformed command: duplicate filezone input
+hexpeek: malformed command: duplicate filezone input
+hexpeek: malformed command: duplicate filezone input
+hexpeek: malformed command: duplicate filezone input
+#### unexpected text after filezone input
+hexpeek: malformed command: unexpected text after filezone input
+hexpeek: malformed command: unexpected text after filezone input
+hexpeek: malformed command: unexpected text after filezone input
+hexpeek: malformed command: unexpected text after filezone input
+hexpeek: malformed command: unexpected text after filezone input
+hexpeek: malformed command: unexpected text after filezone input
+hexpeek: malformed command: unexpected text after filezone input
+hexpeek: malformed command: unexpected text after filezone input
+hexpeek: malformed command: unexpected text after filezone input
+#### invalid subcommand after Hexoff
+hexpeek: malformed command: invalid subcommand after Hexoff
+#### invalid subcommand with '+'
+hexpeek: malformed command: invalid subcommand with '+'
+#### space required before optional argument
+hexpeek: malformed command: space required before optional argument
+#### space required before mandatory argument
+hexpeek: malformed command: space required before mandatory argument
+hexpeek: malformed command: space required before mandatory argument
+hexpeek: malformed command: space required before mandatory argument
+hexpeek: malformed command: space required before mandatory argument
+hexpeek: malformed command: space required before mandatory argument
+hexpeek: malformed command: space required before mandatory argument
+hexpeek: malformed command: space required before mandatory argument
+hexpeek: malformed command: space required before mandatory argument
+hexpeek: malformed command: space required before mandatory argument
+hexpeek: malformed command: space required before mandatory argument
+#### trailing text
+hexpeek: malformed command: trailing text
+hexpeek: malformed command: trailing text
+hexpeek: malformed command: trailing text
+hexpeek: malformed command: trailing text
+hexpeek: malformed command: trailing text
+hexpeek: malformed command: trailing text
+hexpeek: malformed command: trailing text
+hexpeek: malformed command: trailing text
+hexpeek: malformed command: trailing text
+hexpeek: malformed command: trailing text
+hexpeek: malformed command: trailing text
+hexpeek: malformed command: trailing text
+#### empty argument
+hexpeek: malformed command: empty argument
+hexpeek: malformed command: empty argument
+hexpeek: malformed command: empty argument
+#### octets not fully specified
+hexpeek: malformed input: octets not fully specified
+hexpeek: malformed input: octets not fully specified
+hexpeek: malformed input: octets not fully specified
+hexpeek: malformed input: octets not fully specified
+#### unrecognized character
+hexpeek: malformed input: unrecognized character 'Z'
+hexpeek: malformed input: unrecognized character 'Z'
+hexpeek: malformed input: unrecognized character 'Z'
+hexpeek: malformed input: unrecognized character 'Z'
+hexpeek: malformed input: unrecognized character 'g'
+hexpeek: malformed input: unrecognized character 'g'
+hexpeek: malformed input: unrecognized character 'g'
+hexpeek: malformed input: unrecognized character 'g'
+hexpeek: malformed input: unrecognized character 'g'
+hexpeek: malformed input: unrecognized character 'g'
+#### unexpected text after filezone argument
+hexpeek: malformed command: unexpected text after filezone argument
+hexpeek: malformed command: unexpected text after filezone argument
+#### cannot read beyond file length
+hexpeek: malformed command: cannot read beyond file length
+hexpeek: malformed command: cannot read beyond file length
+#### octets not fully specified
+hexpeek: malformed input: octets not fully specified
+hexpeek: malformed input: octets not fully specified
+hexpeek: malformed input: octets not fully specified
+hexpeek: malformed input: octets not fully specified
+hexpeek: malformed input: octets not fully specified
+#### unrecognized character
+hexpeek: malformed input: unrecognized character 'l'
+hexpeek: malformed input: unrecognized character 'Y'
+hexpeek: malformed input: unrecognized character 'Y'
+hexpeek: malformed input: unrecognized character 'Y'
+hexpeek: malformed input: unrecognized character 'Y'
+hexpeek: malformed input: unrecognized character 'L'
+hexpeek: malformed input: unrecognized character 'L'
+hexpeek: malformed input: unrecognized character 'L'
+hexpeek: malformed input: unrecognized character 'L'
+#### input length exceeds specified length
+hexpeek: malformed command: input length exceeds specified length
+#### invalid file number
+hexpeek: malformed command: invalid file number
+hexpeek: malformed command: invalid file number
+hexpeek: malformed command: invalid file number
+#### invalid argument to reset
+hexpeek: malformed command: invalid argument to reset
+hexpeek: malformed command: invalid argument to reset
+hexpeek: malformed command: invalid argument to reset
+hexpeek: malformed command: invalid argument to reset
+#### invalid file number
+hexpeek: malformed command: invalid file number

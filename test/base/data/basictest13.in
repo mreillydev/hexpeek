@@ -1,0 +1,156 @@
+margin 2
+cols 20
+# print file out
+0:lenp
+#### unrecognized command
+garbage
+#### no numeric input found
+,
+:
+rlen ,
+line ?
+group z
+#### offset subceeds minimum recognizable file offset
+-8000000000000000
+#### offset exceeds maximum recognizable file offset
+8000000000000000
+#### bad negative file offset
+-2221
+#### unexpected data after number
+group 1i
+#### negative input not valid
+group -1
+#### excessively large input
+group 10000000000000000
+#### line width may not exceed 0x10000 octets
+line 10001
+#### group width may not exceed 0x10000 octets
+group 10001
+#### duplicate '+'
+2++
+3 + +
+#### invalid file number
+$1
+$
+$ 0
+$ 0 @0
+$-1
+$-1 @0
+  $2 @0
+$z   @0
+#### invalid file offset after '@'
+@
+@ 3
+$0@
+@+
+@,
+@:
+#### negative length not valid
+1,-1
+#### duplicate filezone input
+10,20 ,30
+10,20 :30
+@10:20 ,30
+10:20 :30
+#### unexpected text after filezone input
+$0q
+$0  z
+10w
+10,20,30
+@10,20:30
+10:20,30
+10:20:30
+10 30
+10 endian
+#### invalid subcommand after Hexoff
+0 settings
+#### invalid subcommand with '+'
+1+k
+#### space required before optional argument
+helpk
+#### space required before mandatory argument
+rlen
+line
+group
+insert
+insert 
+replace
+replace 
+insert20
+search
+searchAB
+#### trailing text
+k 4
+k i
+ki
+kIll
+killy
+deleted
+filese
+files e
+hex upper
+hexlo
+text ascii e
+text ascci
+#### empty argument
+/
+i
+r
+#### octets not fully specified
+/ABC
+/ ABC
+/A B
+/ 0123 4 5
+#### unrecognized character
+/ZA
+/AZ
+/ ZA
+/ AZ
+/g210
+/g2 10
+/ g210
+/21g0
+/210g
+/21 0g
+#### unexpected text after filezone argument
+i @1,20.
+5 r @3 7
+#### cannot read beyond file length
+0 r @2221
+0 r @2220,2
+#### octets not fully specified
+i 1
+r 123
+replace 356 7
+insert 1 9
+r0 2
+#### unrecognized character
+10 rlen 4
+rY0
+r Y0
+r0Y
+r 0Y
+i20ABL502
+i20AB5L02
+i20AB35L2
+i20AB350L
+#### input length exceeds specified length
+3,2rAABBCC
+#### write to max
+0:max r 0
+2:max i 11
+#### invalid file number
+reset $-1
+reset $1
+reset $01
+#### invalid argument to reset
+reset $0j
+reset $0 1
+reset 0
+reset a
+#### invalid file number
+reset $*
+# valid delete length greater than file length
+2207,1000 k
+# print file out
+0:maxp

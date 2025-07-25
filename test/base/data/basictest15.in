@@ -1,0 +1,23 @@
+margin 2
+cols 20
+0:lenp
+F20 r @F20,100
+0:lenp
+EE0 i @ED8,60
+0:lenp
+F20 r @F01,100
+0:lenp
+F20 r @F42,100
+0:lenp
+F20,30 i @F30
+0:lenp
+150,300 r @150,150
+0:lenp
+150,300 r @113,150
+0:lenp
+160 i @140,80
+0:lenp
+150,300 r @184,100
+0:lenp
+FFF i @FFE,1001
+0:lenp

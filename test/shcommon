@@ -1,0 +1,173 @@
+#!/bin/sh
+# Copyright 2020 Michael Reilly (mreilly@mreilly.dev).
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+# 3. Neither the names of the copyright holders nor the names of the
+#    contributors may be used to endorse or promote products derived from
+#    this software without specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+# PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS
+# OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+# OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+############################## BASIC DEFINITIONS ###############################
+
+PgmName="hexpeek"
+PgmUpper="HEXPEEK"
+
+fail()
+{
+    ec=8
+    if [ "$#" -eq 1 ]; then
+        ec=$1
+    fi
+    echo "********** $PgmUpper TEST SCRIPT FAILED; EXITING $ec **********"
+    exit $ec
+}
+
+############################### GLOBAL VARIABLES ###############################
+
+LogEnabled=1
+LogTimes=1
+
+Basedir=
+if [ -n "$HEXPEEK_BASEDIR" ]; then
+    Basedir="$HEXPEEK_BASEDIR"
+else
+    echo "error: HEXPEEK_BASEDIR not set!"
+    fail 12
+fi
+Testdir="$Basedir/test"
+Results="$Testdir/results"
+
+if [ ! -n "$HEXPEEK_TESTLEVEL" ]; then
+    HEXPEEK_TESTLEVEL="base"
+fi
+Lvldir="$Testdir/$HEXPEEK_TESTLEVEL"
+Testbin="$Lvldir/bin"
+Datasrc="$Lvldir/data"
+
+Rununder=
+if [ -n "$HEXPEEK_RUNUNDER" ]; then
+    Rununder="$HEXPEEK_RUNUNDER"
+fi
+
+PgmMain="$Basedir/bin/hexpeek"
+PgmPack="$Basedir/bin/hexpack"
+PgmDiff="$Basedir/bin/hexdiff"
+
+if [ ! -n "$HEXPEEK_DIFFBIN" ]; then
+    export HEXPEEK_DIFFBIN="$Testdir/simplediff -binary"
+fi
+if [ ! -n "$HEXPEEK_DIFFTEXT" ]; then
+    export HEXPEEK_DIFFTEXT="$Testdir/simplediff -text"
+fi
+if [ ! -n "$HEXPEEK_TESTPORT" ]; then
+    export HEXPEEK_TESTPORT=58585
+fi
+
+################################## FUNCTIONS ###################################
+
+logon()
+{
+    if [ $LogEnabled -eq 1 ]; then
+        if [ $LogTimes -eq 1 ]; then
+           printf "                     >>>>> %s <<<<<\n" $(date -Iseconds) 1>&2
+        fi
+        set -x
+    fi
+}
+
+logoff()
+{
+    if [ $LogEnabled -eq 1 ]; then
+        set +x
+    fi
+}
+
+logsep()
+{
+    if [ $LogEnabled -eq 1 ]; then
+        printf -- "--------------------------------------------------------------------------------\n" 1>&2
+    fi
+}
+
+checkrc()
+{
+    rc=$1
+    ran=$2
+    invk=$3
+    if [ $rc -ne 0 ]; then
+        if [ -n "$invk" ]; then
+            echo "$invk $ran failed"
+        else
+            echo "$ran failed"
+        fi
+        fail $rc
+    fi
+}
+
+checkbadrc()
+{
+    rc=$1
+    ran=$2
+    invk=$3
+    if [ $rc -eq 0 ]; then
+        if [ -n "$invk" ]; then
+            echo "$invk $ran should have failed, but did not"
+        else
+            echo "$ran should have failed, but did not"
+        fi
+        fail 9
+    fi
+}
+
+checkfiles()
+{
+    difftool=$HEXPEEK_DIFFBIN
+    showtool=
+    if [ "-binary" = "$1" ]; then
+        showtool=$HEXPEEK_SHOWBIN
+        shift
+    elif [ "-text" = "$1" ]; then
+        difftool=$HEXPEEK_DIFFTEXT
+        showtool=$HEXPEEK_SHOWTEXT
+        shift
+    fi
+
+    $difftool $1 $2 >/dev/null
+    rc=$?
+
+    if [ $rc -ne 0 ]; then
+        printf "%s\n" " ** Files '$1' and '$2' differ!"
+        shouldfail=1
+        if [ -n "$Rununder" ] && [ -n "$(echo "$2" | grep "\.err$")" ]; then
+            # Some magic to show Rununder's output without causing failure
+            shouldfail=0
+            if [ ! -n "$showtool" ]; then
+                showtool=$HEXPEEK_SHOWTEXT
+            fi
+        fi
+        if [ -n "$showtool" ]; then
+            $showtool $1 $2
+        fi
+        if [ $shouldfail -eq 1 ]; then
+            fail $rc
+        fi
+    fi
+}
